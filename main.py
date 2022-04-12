@@ -8,7 +8,7 @@ BACKGROUND_COLOR = "#004400"
 
 
 def main():
-    pygame.init()
+    pygame.init() #
     screen = pygame.display.set_mode(DISPLAY)
     bg = Surface((WIN_WIDTH, WIN_HEIGHT))
     bg.fill(Color(BACKGROUND_COLOR))
