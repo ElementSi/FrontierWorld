@@ -30,8 +30,19 @@ class Person:
         self.x = rnd.randint(0, WIDTH - 100)
         self.y = rnd.randint(0, HEIGHT - 100)
         self.v = 10
-        self.vx = 2 * self.v * (rnd.random() - 0.5)
-        direction_y = rnd.random() - 0.5
+        self.vx = self.v * rnd.random()
+        self.r = 10
+        direction_y = rnd.random()
         if direction_y != 0:
             direction_y /= abs(direction_y)
         self.vy = (self.v ** 2 - self.vx ** 2) ** (1 / 2) * direction_y
+
+    def hit_test(self, obj):
+        """
+        Функция проверяет сталкивалкивается ли данный обьект с объектом obj.
+        :param obj: Обьект, с которым проверяется столкновение.
+        :return: Возвращает True в случае столкновения объектов. В противном случае возвращает False.
+        """
+        if self.r + obj.r >= ((self.x - obj.x) ** 2 + (self.y - obj.y) ** 2) ** (1 / 2):
+            return True
+        return False
