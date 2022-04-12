@@ -1,15 +1,25 @@
-# This is a sample Python script.
+import pygame
+from pygame import *
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+WIN_WIDTH = 800
+WIN_HEIGHT = 640
+DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
+BACKGROUND_COLOR = "#004400"
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode(DISPLAY)
+    bg = Surface((WIN_WIDTH, WIN_HEIGHT))
+    bg.fill(Color(BACKGROUND_COLOR))
 
+    while 1:
+        for e in pygame.event.get():
+            if e.type == QUIT:
+                raise SystemExit, "QUIT"
+        screen.blit(bg, (0, 0))
+        pygame.display.update()
+
+
+if __name__ == "__main__":
+    main()
