@@ -1,10 +1,8 @@
-import pygame
-from pygame import *
+import pygame as pg
+import random as rnd
 
-WIN_WIDTH = 800
-WIN_HEIGHT = 640
-DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
-BACKGROUND_COLOR = "#004400"
+
+TILE_SIZE = 24
 
 
 class Point():

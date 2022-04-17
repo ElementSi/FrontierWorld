@@ -1,25 +1,10 @@
-import pygame
-from pygame import *
-
-WIN_WIDTH = 800
-WIN_HEIGHT = 640
-DISPLAY = (WIN_WIDTH, WIN_HEIGHT)
-BACKGROUND_COLOR = "#004400"
+import pygame as pg
+import random as rnd
 
 
-def main():
-    pygame.init()
-    screen = pygame.display.set_mode(DISPLAY)
-    bg = Surface((WIN_WIDTH, WIN_HEIGHT))
-    bg.fill(Color(BACKGROUND_COLOR))
+pg.init()
 
-    while 1:
-        for e in pygame.event.get():
-            if e.type == QUIT:
-                raise SystemExit, "QUIT"
-        screen.blit(bg, (0, 0))
-        pygame.display.update()
+FPS = 60
+SCREEN_WIDTH = pg.display.Info().current_w
+SCREEN_HEIGHT = pg.display.Info().current_h
 
-
-if __name__ == "__main__":
-    main()
