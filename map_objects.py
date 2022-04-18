@@ -1,6 +1,5 @@
 import pygame as pg
 import random as rnd
-import pygame.time
 from map import TILE_SIZE
 
 
@@ -12,7 +11,7 @@ class MapObject:
         """
         Universal basic constructor of map object
         :param surface: Pygame Surface object - target window
-        :param coord: list[float, float] - coordinates of upper left corner of object (tile coordinates)
+        :param coord: list[float, float] - coordinates of object
         """
         self.surface = surface
         self.coord = coord
@@ -24,7 +23,7 @@ class MapObject:
     def chose(self, event):
         """
         Choice object be mouse click
-        :param event: Pygame event object - any event from queue
+        :param event: Pygame event object - MOUSEBOTTONDOWN event from queue
         :return: bool - is object chosen
         """
         pass  # Надо провести аккуратную и быструю (!) проверку на то, попал ли игрок курсором на объект
@@ -53,7 +52,7 @@ class SolidObject(MapObject):
         """
         Universal constructor of solid object
         :param surface: Pygame Surface object - target window
-        :param coord: list[float, float] - coordinates of upper left corner of object (tile coordinates)
+        :param coord: list[float, float] - coordinates of object
         """
         super().__init__(surface, coord)
         self.hit_points = 10
@@ -68,7 +67,7 @@ class Creation(SolidObject):
         """
         Universal constructor of creature
         :param surface: Pygame Surface object - target window
-        :param coord: list[float, float] - coordinates of upper left corner of object (tile coordinates)
+        :param coord: list[float, float] - coordinates of object
         """
         super().__init__(surface, coord)
         self.speed = 0.05  # Base value [tile/tick]
@@ -80,19 +79,18 @@ class Creation(SolidObject):
         """
         Taking damage by creature
         """
-        # rood = Object(self.surface, "blood.png", [10, 10])  # Найти и использовать фотографию крови
-        # rood.draw()
-        # # pygame.display.update()
-        # # clock.tick(1)
-        # self.live -= 1
+        pass  # Надо уменьшить количество жизней и вернуть соответствующий визуальный эффект
+        # return Effect()
 
-    def pathfinder(self, goal_coord, region_map):
+    def pathfinder(self, goal_coord, region_map, list_solid_object):
         """
-
-        :param goal_coord:
-        :param region_map:
-        :return: list[tuple(x, y),...]
+        Finding the best way to the goal on the map
+        :param goal_coord: list[int, int] -
+        :param region_map: Map object - map of the game region
+        :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
+        :return: list[list[int, int],...] - list of tiles to go through
         """
+        pass  # Надо решить задачу поиска кратчайшего пути в лабиринте
 
 
 class Animal(Creation):
@@ -103,7 +101,7 @@ class Animal(Creation):
         """
         Universal constructor of animal
         :param surface: Pygame Surface object - target window
-        :param coord: list[float, float] - coordinates of upper left corner of object (tile coordinates)
+        :param coord: list[float, float] - coordinates of object
         """
         super().__init__(surface, coord)
         self.activity_rate = 0.1  # Base value, some relative coefficient
@@ -131,57 +129,22 @@ class Settler(Creation):
         """
         Universal constructor of animal
         :param surface: Pygame Surface object - target window
-        :param coord: list[float, float] - coordinates of upper left corner of object (tile coordinates)
+        :param coord: list[float, float] - coordinates of object
         """
         super().__init__(surface, coord)
         self.activity_rate = 0.1  # Base value, some relative coefficient
-        self.type = "def_animal"
+        self.type = "settler"
 
     def death(self):
         """
         Processing of death effects
         """
-        RED = (255, 0, 0)
-        font = pygame.font.Font(None, 100)
-        message = font.render("Game over", True, RED)
-        place = message.get_rect(center=(WIDTH / 2, HEIGHT / 2))
-        self.surface.blit(message, place)
-        pygame.display.update()
-        clock.tick(1)
-        self.texture = "died_man.png"  # найти и спользоват фотогорафию мертовго чела
-
+        # RED = (255, 0, 0)
+        # font = pygame.font.Font(None, 100)
+        # message = font.render("Game over", True, RED)
+        # place = message.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+        # self.surface.blit(message, place)
+        # pygame.display.update()
+        # clock.tick(1)
+        # self.texture = "died_man.png"  # найти и спользоват фотогорафию мертовго чела
         # по идее выход из игры + вывод счетчика очков
-
-    def move(self):
-        """
-        перемещение человека
-        """
-        pass
-
-    def doing_something(self):
-        """
-        выполнение какаих-то действий
-        """
-        pass
-
-    def find_good_road(self):
-        """
-        поиск короткого пути и перемещение по нему
-        """
-        pass
-
-    def choose_men(self):
-        """
-        :return: True если им можно управлять, else False
-        """
-        if self.controllability % 2 == 0:
-            return True
-        else:
-            return False
-
-    def event_command(self, event):
-        """
-        обработка команд с клавиатуры
-        :param event: команда которую нужно обработать
-        """
-        pass
