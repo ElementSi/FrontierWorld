@@ -91,7 +91,7 @@ class Creation(SolidObject):
 
         :param goal_coord:
         :param region_map:
-        :return:
+        :return: list[tuple(x, y),...]
         """
 
 

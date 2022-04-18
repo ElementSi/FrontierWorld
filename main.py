@@ -1,6 +1,7 @@
 import pygame as pg
 import random as rnd
 import map_objects as obj
+import map as reg_map
 
 
 pg.init()
@@ -21,7 +22,7 @@ class Gameplay:
         """
         self.surface = surface
         self.clock = pg.time.Clock()
-        self.map = None  # Need to add map class
+        self.map = reg_map.Map([SCREEN_WIDTH, SCREEN_HEIGHT])  # Need to add map class
         self.list_solid_object = []  # Need to add settler, animals, nature objects, maybe constructions of loot
         self.list_effects = []
         self.list_loot = []
