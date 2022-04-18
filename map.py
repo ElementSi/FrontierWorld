@@ -6,7 +6,7 @@ TILE_SIZE = 24
 
 class Tile:
     """
-
+    Tile that contains information about its surface type and prescribed for spawn objects
     """
     def __init__(self, type, prescribed_object):
         """
