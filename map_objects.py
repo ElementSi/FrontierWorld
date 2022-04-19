@@ -6,6 +6,7 @@ class MapObject:
     """
     Any changeable map object
     """
+
     def __init__(self, surface, coord):
         """
         Universal basic constructor of map object
@@ -26,7 +27,8 @@ class MapObject:
         :return: bool - is object chosen
         """
         pos = event.get_pos()
-        if abs(pos[0] - self.coord[0]*TILE_SIZE) <= TILE_SIZE and abs(pos[1] - self.coord[1]*TILE_SIZE) <= TILE_SIZE:
+        if abs(pos[0] - self.coord[0] * TILE_SIZE) <= TILE_SIZE and abs(
+                pos[1] - self.coord[1] * TILE_SIZE) <= TILE_SIZE:
             self.is_chosen = True
         else:
             self.is_chosen = True
@@ -54,6 +56,7 @@ class SolidObject(MapObject):
     """
     Material object with limited hit points that can only exist on the map
     """
+
     def __init__(self, surface, coord):
         """
         Universal constructor of solid object
@@ -82,6 +85,7 @@ class Creature(SolidObject):
     """
     Creature that can move and proceed more complex tasks
     """
+
     def __init__(self, surface, coord):
         """
         Universal constructor of creature
@@ -112,6 +116,7 @@ class Animal(Creature):
     """
     Animals controlled by AI
     """
+
     def __init__(self, surface, coord):
         """
         Universal constructor of animal
@@ -139,6 +144,7 @@ class Settler(Creature):
     """
     Settler controlled by player
     """
+
     def __init__(self, surface, coord):
         """
         Constructor of settler
@@ -160,10 +166,12 @@ class Settler(Creature):
         effect = Effect(self.surface, self.coord, texture, lifetime)
         return effect
 
+
 class Deer(Animal):
     """
     Large herbivore animal
     """
+
     def __init__(self, surface, coord):
         """
         Constructor of deer
@@ -183,6 +191,7 @@ class Wolf(Animal):
     """
     Medium size predatory animal
     """
+
     def __init__(self, surface, coord):
         """
         Constructor of wolf
@@ -201,6 +210,7 @@ class Turtle(Animal):
     """
     Small herbivore in a shell
     """
+
     def __init__(self, surface, coord):
         """
         Constructor of turtle
@@ -219,6 +229,7 @@ class NatureObject(SolidObject):
     """
     Solid object of flora or inanimate nature, impassable
     """
+
     def __init__(self, surface, coord):
         """
         Universal constructor of nature object
@@ -242,6 +253,7 @@ class Cliff(NatureObject):
     """
     Part of the rock that rises above the map
     """
+
     def __init__(self, surface, coord):
         """
         Constructor of cliff
@@ -258,6 +270,7 @@ class Effect(MapObject):
     """
     Intangible effect that exists for a limited time
     """
+
     def __init__(self, surface, coord, texture, lifetime):
         """
         Constructor of any effect
