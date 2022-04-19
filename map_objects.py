@@ -20,13 +20,19 @@ class MapObject:
         self.is_chosen = False
         self.type = "def_object"
 
-    def chose(self, event):
+    def choose(self, event):
         """
         Choice object be mouse click
         :param event: Pygame event object - MOUSEBOTTONDOWN event from queue
         :return: bool - is object chosen
         """
-        pass  # Надо провести аккуратную и быструю (!) проверку на то, попал ли игрок курсором на объект
+        pos = event.get_pos()
+        if abs(pos[0] - self.coord[0]*TILE_SIZE) <= TILE_SIZE and abs(pos[1] - self.coord[1]*TILE_SIZE) <= TILE_SIZE:
+            self.is_chosen = True
+        else:
+            self.is_chosen = True
+
+        return self.is_chosen
 
     def draw(self):
         """
