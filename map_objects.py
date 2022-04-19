@@ -155,13 +155,10 @@ class Settler(Creature):
         """
         Processing of death effects
         """
-        # RED = (255, 0, 0)
-        # font = pg.font.Font(None, 100)
-        # message = font.render("Game over", True, RED)
-        # place = message.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
-        # self.surface.blit(message, place)
-        # return effect
-
+        texture = pg.transform.scale(pg.image.load("rood.png"), (TILE_SIZE, TILE_SIZE))
+        lifetime = 300
+        effect = Effect(self.surface, self.coord, texture, lifetime)
+        return effect
 
 
 class Deer(Animal):
