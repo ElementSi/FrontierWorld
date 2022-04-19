@@ -1,6 +1,7 @@
 import pygame as pg
-import random as rnd
 from map import TILE_SIZE
+from main import SCREEN_WIDTH
+from main import SCREEN_HEIGHT
 
 
 class MapObject:
@@ -20,13 +21,19 @@ class MapObject:
         self.is_chosen = False
         self.type = "def_object"
 
-    def chose(self, event):
+    def choose(self, event):
         """
         Choice object be mouse click
         :param event: Pygame event object - MOUSEBOTTONDOWN event from queue
         :return: bool - is object chosen
         """
-        pass  # Надо провести аккуратную и быструю (!) проверку на то, попал ли игрок курсором на объект
+        pos = event.get_pos()
+        if abs(pos[0] - self.coord[0]*TILE_SIZE) <= TILE_SIZE and abs(pos[1] - self.coord[1]*TILE_SIZE) <= TILE_SIZE:
+            self.is_chosen = True
+        else:
+            self.is_chosen = True
+
+        return self.is_chosen
 
     def draw(self):
         """
@@ -34,14 +41,15 @@ class MapObject:
         """
         self.surface.blit(self.texture, self.draw_box)
         if self.is_chosen:
-            pass  # Надо нарисовать белую рамку вокруг объекта, если он выбран
+            white = (255, 255, 255)
+            pg.draw.rect(self.surface, white, self.draw_box, 3)
 
     def safe(self, file):
         """
         Writing information about an object to a save file
         :param file: TextIO object - Output stream to an external save file
         """
-        pass  # Надо записать строчку с исчерпывающей и унифицированной информацией об объекте в файл
+        file.write("type: " + self.type + ", coord: " + self.coord)
 
 
 class SolidObject(MapObject):
@@ -57,6 +65,19 @@ class SolidObject(MapObject):
         super().__init__(surface, coord)
         self.hit_points = 10
         self.type = "def_solid_object"
+
+    def safe(self, file):
+        super().safe(file)
+        file.write("hit_points: " + str(self.hit_points))
+
+    def take_damage(self, damage):
+        """
+        Taking damage by creature
+        :param damage: damage done to an object
+        :return effect
+        """
+        self.hit_points -= damage
+        # return effect
 
 
 class Creation(SolidObject):
@@ -74,13 +95,6 @@ class Creation(SolidObject):
         self.damage = 1  # Base value [hit point]
         self.melee_cooldown = 60  # Base value [tick]
         self.type = "def_creation"
-
-    def take_damage(self, damage):
-        """
-        Taking damage by creature
-        """
-        pass  # Надо уменьшить количество жизней и вернуть соответствующий визуальный эффект
-        # return Effect()
 
     def pathfinder(self, goal_coord, region_map, list_solid_object):
         """
@@ -111,7 +125,7 @@ class Animal(Creation):
         """
         Processing of death effects
         """
-        pass
+        # return effect
 
     def move(self):
         """
@@ -140,11 +154,9 @@ class Settler(Creation):
         Processing of death effects
         """
         # RED = (255, 0, 0)
-        # font = pygame.font.Font(None, 100)
+        # font = pg.font.Font(None, 100)
         # message = font.render("Game over", True, RED)
-        # place = message.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+        # place = message.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
         # self.surface.blit(message, place)
-        # pygame.display.update()
-        # clock.tick(1)
-        # self.texture = "died_man.png"  # найти и спользоват фотогорафию мертовго чела
-        # по идее выход из игры + вывод счетчика очков
+        # return effect
+
