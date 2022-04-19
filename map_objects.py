@@ -163,7 +163,6 @@ class Settler(Creature):
         # return effect
 
 
-
 class Deer(Animal):
     """
     Large herbivore animal

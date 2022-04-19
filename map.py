@@ -4,8 +4,6 @@ from random import randint
 
 
 TILE_SIZE = 24
-WIDTH = 1920
-HEIGHT = 1080
 
 LANDSCAPE = {
     "soil": [0.9, pg.transform.scale(pg.image.load("textures/soil.png"), (TILE_SIZE, TILE_SIZE))],
@@ -31,8 +29,10 @@ class Tile:
         self.texture = LANDSCAPE[type][1]
         self.pre_object = pre_object
 
+
 def probability():
     return 'tree'
+
 
 class Map:
     """
@@ -78,7 +78,7 @@ class Map:
         """
         Drawing the whole map in the current window
         """
-        #pygame.draw.rect(surface, 'green', Tile(self.rect))
+        # pygame.draw.rect(surface, 'green', Tile(self.rect))
         pass
 
     def safe(self, file):
