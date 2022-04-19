@@ -4,8 +4,6 @@ from random import randint
 
 
 TILE_SIZE = 24
-WIDTH = 1920
-HEIGHT = 1080
 
 LANDSCAPE = {
     "soil": [0.9, pg.transform.scale(pg.image.load("textures/soil.png"), (TILE_SIZE, TILE_SIZE))],
@@ -32,8 +30,11 @@ class Tile:
         self.pre_object = pre_object
 
 
+def probability():
+    return 'tree'
 
-class Map():
+
+class Map:
     """
     Map consisting of tiles arranged in a grid
     """
@@ -45,7 +46,7 @@ class Map():
             for j in range (size[0]):
                 if self.field[i] == size[1]//2 and self.field[j] == size[0]/2:
                     for k in range (randint(10,100)):
-                        self.field[size[1]//2+k][size[0]//2+k] = Tile(surface,'soil', ' ') #fill the middle with soil
+                        self.field[size[1]//2+k][size[0]//2+k] = Tile(surface,'soil', probability()) #fill the middle with soil
                 elif self.field[i] == 0 & self.field[j] == 0:
                     for p in range (randint(30,90)):
                         self.field[p][p] = Tile(surface, 'sand', ' ') #fill the upper left corner with sand
@@ -53,6 +54,7 @@ class Map():
                     for l in range (randint(10,30)):
                         self.field[l][l] = Tile(surface, 'rock', ' ') # fill the  upper right corner with rock
 
+        # Добавить в pre-object вероятность возникновения объекта (rock, tree, bush)
         # Главная и сложная задача - написать интересную случайную генерацию карты,
         # которая будет распределять по ней типы поверхности, а затем объекты, наследующие классу NaturalObjects.
 
@@ -76,7 +78,7 @@ class Map():
         """
         Drawing the whole map in the current window
         """
-        #pygame.draw.rect(surface, 'green', Tile(self.rect))
+        # pygame.draw.rect(surface, 'green', Tile(self.rect))
         pass
 
     def safe(self, file):

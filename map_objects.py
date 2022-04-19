@@ -160,7 +160,6 @@ class Settler(Creature):
         effect = Effect(self.surface, self.coord, texture, lifetime)
         return effect
 
-
 class Deer(Animal):
     """
     Large herbivore animal
