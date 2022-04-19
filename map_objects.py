@@ -72,7 +72,7 @@ class SolidObject(MapObject):
         # return Effect()
 
 
-class Creation(SolidObject):
+class Creature(SolidObject):
     """
     Creature that can move and proceed more complex tasks
     """
@@ -84,9 +84,12 @@ class Creation(SolidObject):
         """
         super().__init__(surface, coord)
         self.speed = 0.05  # Base value [tile/tick]
-        self.damage = 1  # Base value [hit point]
-        self.melee_cooldown = 60  # Base value [tick]
+        self.damage = 1.0  # Base value [hit point]
+        self.melee_cooldown = 60.0  # Base value [tick]
         self.type = "def_creation"
+
+    def update_draw_box(self):
+        self.draw_box = (self.coord[0] * TILE_SIZE, self.coord[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE)
 
     def pathfinder(self, goal_coord, region_map, list_solid_object):
         """
@@ -99,7 +102,7 @@ class Creation(SolidObject):
         pass  # Надо решить задачу поиска кратчайшего пути в лабиринте
 
 
-class Animal(Creation):
+class Animal(Creature):
     """
     Animals controlled by AI
     """
@@ -117,7 +120,6 @@ class Animal(Creation):
         """
         Processing of death effects
         """
-        pass
 
     def move(self):
         """
@@ -126,19 +128,20 @@ class Animal(Creation):
         pass
 
 
-class Settler(Creation):
+class Settler(Creature):
     """
     Settler controlled by player
     """
-
     def __init__(self, surface, coord):
         """
-        Universal constructor of animal
+        Constructor of settler
         :param surface: Pygame Surface object - target window
         :param coord: list[float, float] - coordinates of object
         """
         super().__init__(surface, coord)
-        self.activity_rate = 0.1  # Base value, some relative coefficient
+        self.texture = pg.transform.scale(pg.image.load("textures/settler.png"), (TILE_SIZE, TILE_SIZE))
+        self.hit_points = 20.0
+        self.damage = 2.0
         self.type = "settler"
 
     def death(self):
@@ -154,3 +157,113 @@ class Settler(Creation):
         # clock.tick(1)
         # self.texture = "died_man.png"  # найти и спользоват фотогорафию мертовго чела
         # по идее выход из игры + вывод счетчика очков
+
+
+class Deer(Animal):
+    """
+    Large herbivore animal
+    """
+    def __init__(self, surface, coord):
+        """
+        Constructor of deer
+        :param surface: Pygame Surface object - target window
+        :param coord: list[float, float] - coordinates of object
+        """
+        super().__init__(surface, coord)
+        self.texture = pg.transform.scale(pg.image.load("textures/deer.png"), (TILE_SIZE, TILE_SIZE))
+        self.hit_points = 30.0
+        self.speed = 0.8
+        self.damage = 0.5
+        self.melee_cooldown = 120.0
+        self.type = "deer"
+
+
+class Wolf(Animal):
+    """
+    Medium size predatory animal
+    """
+    def __init__(self, surface, coord):
+        """
+        Constructor of wolf
+        :param surface: Pygame Surface object - target window
+        :param coord: list[float, float] - coordinates of object
+        """
+        super().__init__(surface, coord)
+        self.texture = pg.transform.scale(pg.image.load("textures/wolf.png"), (TILE_SIZE, TILE_SIZE))
+        self.speed = 0.7
+        self.hit_points = 16.0
+        self.damage = 3.0
+        self.type = "wolf"
+
+
+class Turtle(Animal):
+    """
+    Small herbivore in a shell
+    """
+    def __init__(self, surface, coord):
+        """
+        Constructor of turtle
+        :param surface: Pygame Surface object - target window
+        :param coord: list[float, float] - coordinates of object
+        """
+        super().__init__(surface, coord)
+        self.texture = pg.transform.scale(pg.image.load("textures/turtle.png"), (TILE_SIZE, TILE_SIZE))
+        self.speed = 0.2
+        self.damage = 0.5
+        self.melee_cooldown = 80.0
+        self.type = "turtle"
+
+
+class NatureObject(SolidObject):
+    """
+    Solid object of flora or inanimate nature, impassable
+    """
+    def __init__(self, surface, coord):
+        """
+        Universal constructor of nature object
+        :param surface: Pygame Surface object - target window
+        :param coord: list[float, float] - coordinates of object
+        """
+        super().__init__(surface, coord)
+        self.res_type = None
+        self.res_quantity = 0
+        self.type = "def_nature_object"
+
+    def destroy(self):
+        """
+        Destruction triggered from the outside
+        :return: Resources object - resources obtained when an object is destroyed
+        """
+        pass
+
+
+class Cliff(NatureObject):
+    """
+    Part of the rock that rises above the map
+    """
+    def __init__(self, surface, coord):
+        """
+        Constructor of cliff
+        :param surface: Pygame Surface object - target window
+        :param coord: list[float, float] - coordinates of object
+        """
+        super().__init__(surface, coord)
+        self.res_type = "stone"
+        self.res_quantity = 30
+        self.type = "def_nature_object"
+
+
+class Effect(MapObject):
+    """
+    Intangible effect that exists for a limited time
+    """
+    def __init__(self, surface, coord, texture, lifetime):
+        """
+        Constructor of any effect
+        :param surface: Pygame Surface object - target window
+        :param coord: list[float, float] - coordinates of object
+        """
+        super().__init__(surface, coord)
+        self.texture = texture
+        self.lifetime = lifetime
+        self.age = 0
