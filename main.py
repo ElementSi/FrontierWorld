@@ -22,7 +22,7 @@ class Gameplay:
         """
         self.surface = surface
         self.clock = pg.time.Clock()
-        self.map = reg_map.Map([SCREEN_WIDTH, SCREEN_HEIGHT])  # Need to add map class
+        self.map = reg_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])  # Need to add map class
         self.list_solid_object = []  # Need to add settler, animals, nature objects, maybe constructions of loot
         self.list_effects = []
         self.list_loot = []
@@ -70,7 +70,6 @@ class Gameplay:
                     for map_object in self.list_solid_object:
                         if map_object.chose(event):
                             self.chosen_map_object = map_object
-                            break
 
     def move_creation(self):
         """
