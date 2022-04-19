@@ -58,6 +58,13 @@ class SolidObject(MapObject):
         self.hit_points = 10
         self.type = "def_solid_object"
 
+    def take_damage(self, damage):
+        """
+        Taking damage by creature
+        """
+        pass  # Надо уменьшить количество жизней и вернуть соответствующий визуальный эффект
+        # return Effect()
+
 
 class Creation(SolidObject):
     """
@@ -74,13 +81,6 @@ class Creation(SolidObject):
         self.damage = 1  # Base value [hit point]
         self.melee_cooldown = 60  # Base value [tick]
         self.type = "def_creation"
-
-    def take_damage(self, damage):
-        """
-        Taking damage by creature
-        """
-        pass  # Надо уменьшить количество жизней и вернуть соответствующий визуальный эффект
-        # return Effect()
 
     def pathfinder(self, goal_coord, region_map, list_solid_object):
         """
