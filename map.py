@@ -1,7 +1,11 @@
+import pygame
 import pygame as pg
+from random import randint
 
 
 TILE_SIZE = 24
+WIDTH = 1920
+HEIGHT = 1080
 
 LANDSCAPE = {
     "soil": [0.9, pg.transform.scale(pg.image.load("textures/soil.png"), (TILE_SIZE, TILE_SIZE))],
@@ -28,14 +32,27 @@ class Tile:
         self.pre_object = pre_object
 
 
-class Map:
+
+class Map():
     """
     Map consisting of tiles arranged in a grid
     """
     def __init__(self, surface, size):
         self.surface = surface
         self.size = size
-        self.field = [[Tile("soil", self.surface, None) for _ in range(self.size[0])] for _ in range(self.size[1])]
+        self.field = [size[1]][size[0]]
+        for i in range(size[1]):
+            for j in range (size[0]):
+                if self.field[i] == size[1]//2 and self.field[j] == size[0]/2:
+                    for k in range (randint(10,100)):
+                        self.field[size[1]//2+k][size[0]//2+k] = Tile(surface,'soil', ' ') #fill the middle with soil
+                elif self.field[i] == 0 & self.field[j] == 0:
+                    for p in range (randint(30,90)):
+                        self.field[p][p] = Tile(surface, 'sand', ' ') #fill the upper left corner with sand
+                elif self.field[i] == size[1] and self.field[j] == size[0]:
+                    for l in range (randint(10,30)):
+                        self.field[l][l] = Tile(surface, 'rock', ' ') # fill the  upper right corner with rock
+
         # Главная и сложная задача - написать интересную случайную генерацию карты,
         # которая будет распределять по ней типы поверхности, а затем объекты, наследующие классу NaturalObjects.
 
@@ -55,11 +72,12 @@ class Map:
         """
         return self.field[coord[0]][coord[1]].speed_mod
 
-    def draw(self):
+    def draw(self, surface):
         """
         Drawing the whole map in the current window
         """
-        pass  # Надо нарисовать все тайлы на экране
+        #pygame.draw.rect(surface, 'green', Tile(self.rect))
+        pass
 
     def safe(self, file):
         """

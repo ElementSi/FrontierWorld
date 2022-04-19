@@ -1,5 +1,4 @@
 import pygame as pg
-import random as rnd
 from map import TILE_SIZE
 
 
@@ -40,14 +39,15 @@ class MapObject:
         """
         self.surface.blit(self.texture, self.draw_box)
         if self.is_chosen:
-            pass  # Надо нарисовать белую рамку вокруг объекта, если он выбран
+            white = (255, 255, 255)
+            pg.draw.rect(self.surface, white, self.draw_box, 3)
 
     def safe(self, file):
         """
         Writing information about an object to a save file
         :param file: TextIO object - Output stream to an external save file
         """
-        pass  # Надо записать строчку с исчерпывающей и унифицированной информацией об объекте в файл
+        file.write("type: " + self.type + ", coord: " + self.coord)
 
 
 class SolidObject(MapObject):
@@ -64,12 +64,18 @@ class SolidObject(MapObject):
         self.hit_points = 10
         self.type = "def_solid_object"
 
+    def safe(self, file):
+        super().safe(file)
+        file.write("hit_points: " + str(self.hit_points))
+
     def take_damage(self, damage):
         """
         Taking damage by creature
+        :param damage: damage done to an object
+        :return effect
         """
-        pass  # Надо уменьшить количество жизней и вернуть соответствующий визуальный эффект
-        # return Effect()
+        self.hit_points -= damage
+        # return effect
 
 
 class Creature(SolidObject):
@@ -120,6 +126,7 @@ class Animal(Creature):
         """
         Processing of death effects
         """
+        # return effect
 
     def move(self):
         """
@@ -149,14 +156,12 @@ class Settler(Creature):
         Processing of death effects
         """
         # RED = (255, 0, 0)
-        # font = pygame.font.Font(None, 100)
+        # font = pg.font.Font(None, 100)
         # message = font.render("Game over", True, RED)
-        # place = message.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+        # place = message.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
         # self.surface.blit(message, place)
-        # pygame.display.update()
-        # clock.tick(1)
-        # self.texture = "died_man.png"  # найти и спользоват фотогорафию мертовго чела
-        # по идее выход из игры + вывод счетчика очков
+        # return effect
+
 
 
 class Deer(Animal):
