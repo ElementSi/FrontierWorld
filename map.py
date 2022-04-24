@@ -1,6 +1,7 @@
 import pygame
 import pygame as pg
 from random import randint
+from PIL import Image, ImageDraw, ImageFilter
 
 
 TILE_SIZE = 24
@@ -34,6 +35,7 @@ def probability():
     return 'tree'
 
 
+
 class Map:
     """
     Map consisting of tiles arranged in a grid
@@ -42,17 +44,53 @@ class Map:
         self.surface = surface
         self.size = size
         self.field = [size[1]][size[0]]
-        for i in range(size[1]):
-            for j in range (size[0]):
-                if self.field[i] == size[1]//2 and self.field[j] == size[0]/2:
-                    for k in range (randint(10,100)):
-                        self.field[size[1]//2+k][size[0]//2+k] = Tile(surface,'soil', probability()) #fill the middle with soil
-                elif self.field[i] == 0 & self.field[j] == 0:
-                    for p in range (randint(30,90)):
-                        self.field[p][p] = Tile(surface, 'sand', ' ') #fill the upper left corner with sand
-                elif self.field[i] == size[1] and self.field[j] == size[0]:
-                    for l in range (randint(10,30)):
-                        self.field[l][l] = Tile(surface, 'rock', ' ') # fill the  upper right corner with rock
+
+        im1 = Image.new("RGB", (80, 45))  # create new picture
+        width = im1.size[1]
+        height = im1.size[0]
+        pix = im1.load()  # All pixels from background
+        if pix is not None:
+            pix = im1.load()
+
+        draw = ImageDraw.Draw(im1)
+        for i in range(width):
+            for j in range (height):
+                rand_num = randint(0, 255)
+                draw.point((i, j), (rand_num, rand_num, rand_num))
+        im1 = im1.filter(ImageFilter.GaussianBlur(radius=3))
+        for i in range(width):
+            for j in range(height):
+                r = pix[i, j][0]
+                g = pix[i, j][1]
+                b = pix[i, j][2]
+
+                if r > 127 and g > 127 and b > 127:
+                    r = 255
+                    g = 255
+                    b = 255
+                    self.field[i][j] = Tile(surface, 'soil', probability())
+                elif r:
+                    r = 0
+                    g = 0
+                    b = 0
+                    self.field[i][j] = Tile(surface, 'sand', ' ')
+                else:
+                    r = 0
+                    g = 0
+                    b = 0
+                    self.field[i][j] = Tile(surface, 'rock', ' ')
+
+
+
+                #if self.field[i] == size[1]//2 and self.field[j] == size[0]/2:
+                #    for k in range (randint(10,100)):
+                #        self.field[size[1]//2+k][size[0]//2+k] = Tile(surface,'soil', probability()) #fill the middle with soil
+                #elif self.field[i] == 0 & self.field[j] == 0:
+                #    for p in range (randint(30,90)):
+                #        self.field[p][p] = Tile(surface, 'sand', ' ') #fill the upper left corner with sand
+                #elif self.field[i] == size[1] and self.field[j] == size[0]:
+                #    for l in range (randint(10,30)):
+                #        self.field[l][l] = Tile(surface, 'rock', ' ') # fill the  upper right corner with rock
 
         # Добавить в pre-object вероятность возникновения объекта (rock, tree, bush)
         # Главная и сложная задача - написать интересную случайную генерацию карты,
@@ -86,3 +124,4 @@ class Map:
         Writing information about the map to a save file
         """
         pass  # Надо записать строчку с исчерпывающей и унифицированной информацией о карте в файл
+
