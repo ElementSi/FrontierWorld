@@ -167,8 +167,25 @@ class Creature(SolidObject):
         """
         Moving to the next tile along the path
         :param next_coord: list[int, int] - coordinates of the next tile
+        :return: [float, float] - massive of coordinates direction velocity vector
         """
-        pass  # need to define direction of moving to get to the next tile
+        if next_coord[0] < self.coord[0]:
+            if next_coord[1] < self.coord[1]:
+                return [-1 / (2**0.5), -1 / (2**0.5)]
+            if next_coord[1] > self.coord[1]:
+                return [-1 / (2**0.5), 1 / (2**0.5)]
+            return [-1, 0]
+
+        if next_coord[0] > self.coord[0]:  # check if next_coord[x] > self.coord[x]
+            if next_coord[1] < self.coord[1]:
+                return [1 / (2 ** 0.5), -1 / (2 ** 0.5)]
+            if next_coord[1] > self.coord[1]:
+                return [1 / (2 ** 0.5), 1 / (2 ** 0.5)]
+            return [1, 0]
+        if next_coord[1] > self.coord[1]:
+            return [0, 1]
+        if next_coord[1] < self.coord[1]:
+            return [0, -1]
 
     def move(self):
         """
