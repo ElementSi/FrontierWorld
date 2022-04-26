@@ -47,33 +47,39 @@ class Map:
     def __init__(self, surface, size):
         self.surface = surface
         self.size = size
-        self.field = [size[1]/TILE_SIZE][size[0]/TILE_SIZE]
+        self.field = []
+        for i in range(size[1]//TILE_SIZE):
+            self.field.append([])
+            for j in range(size[0]//TILE_SIZE):
+                self.field[-1].append(0)
+        for i in range(size[1]//TILE_SIZE):
+            for j in range(size[0] // TILE_SIZE):
+                self.field[i][j] = Tile(surface, 'soil', probability())
+        # im1 = Image.new("RGB", (80, 45))  # create new picture
+        # width = im1.size[1]
+        # height = im1.size[0]
+        # pix: tp.Optional[np.array] = im1.load()  # All pixels from background
+        # if pix is not None:
+        #     pix = im1.load()
+        #
+        # draw = ImageDraw.Draw(im1)
+        # for i in range(width):
+        #     for j in range (height):
+        #         rand_num = randint(0, 255)
+        #         draw.point((i, j), (rand_num, rand_num, rand_num))
+        # im1 = im1.filter(ImageFilter.GaussianBlur(radius=3))
+        # for i in range(width):
+        #     for j in range(height):
+        #         r = pix[i, j][0]
+        #         g = pix[i, j][1]
+        #         b = pix[i, j][2]
 
-        im1 = Image.new("RGB", (80, 45))  # create new picture
-        width = im1.size[1]
-        height = im1.size[0]
-        pix: tp.Optional[np.array] = im1.load()  # All pixels from background
-        if pix is not None:
-            pix = im1.load()
-
-        draw = ImageDraw.Draw(im1)
-        for i in range(width):
-            for j in range (height):
-                rand_num = randint(0, 255)
-                draw.point((i, j), (rand_num, rand_num, rand_num))
-        im1 = im1.filter(ImageFilter.GaussianBlur(radius=3))
-        for i in range(width):
-            for j in range(height):
-                r = pix[i, j][0]
-                g = pix[i, j][1]
-                b = pix[i, j][2]
-
-                if r > 170 and g > 170 and b > 170:
-                    self.field[i][j] = Tile(surface, 'soil', probability())
-                elif (85 < r < 171 ) and (85 < r < 171)  and (85 < r < 171):
-                    self.field[i][j] = Tile(surface, 'sand', ' ')
-                else:
-                    self.field[i][j] = Tile(surface, 'rock', ' ')
+                # if r > 170 and g > 170 and b > 170:
+                #     self.field[i][j] = Tile(surface, 'soil', probability())
+                # elif (85 < r < 171 ) and (85 < r < 171)  and (85 < r < 171):
+                #     self.field[i][j] = Tile(surface, 'sand', ' ')
+                # else:
+                #     self.field[i][j] = Tile(surface, 'rock', ' ')
 
 
 
@@ -111,8 +117,10 @@ class Map:
         """
         Drawing the whole map in the current window
         """
-        # pygame.draw.rect(surface, 'green', Tile(self.rect))
-        pass
+        for i in range(self.size[1] // TILE_SIZE):
+            for j in range(self.size[0] // TILE_SIZE):
+                tile_rect = (j*TILE_SIZE, i*TILE_SIZE, TILE_SIZE, TILE_SIZE)
+                pg.draw.rect(self.surface, 'green', tile_rect)
 
     def safe(self, file):
         """
