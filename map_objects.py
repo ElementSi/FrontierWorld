@@ -59,7 +59,7 @@ class MapObject:
         :param event: Pygame event object - MOUSEBOTTONDOWN event from queue
         :return: bool - is object chosen
         """
-        pos = event.get_pos()
+        pos = event.pos
         if abs(pos[0] - self.coord[0] * TILE_SIZE) <= TILE_SIZE and \
                 abs(pos[1] - self.coord[1] * TILE_SIZE) <= TILE_SIZE:
             self.is_chosen = True

@@ -23,7 +23,13 @@ class Gameplay:
         self.surface = surface
         self.clock = pg.time.Clock()
         self.map = reg_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])
-        self.list_solid_object = []  # need to add settler, animals, nature objects, maybe constructions of loot
+        self.list_solid_object = []
+
+        for i in range(self.map.height):
+            for j in range(self.map.width):
+                if self.map.field[i][j].pre_object == "tree":
+                    self.list_solid_object.append(obj.Tree(self.surface, [i, j], 80))
+
         self.list_effects = []
         self.list_loot = []
         self.chosen_map_object = None
@@ -45,6 +51,8 @@ class Gameplay:
         """
         Drawing every object
         """
+        for solid_object in self.list_solid_object:
+            solid_object.draw()
 
     def display_update(self):
         """
@@ -70,7 +78,7 @@ class Gameplay:
                 if self.chosen_task is None:
                     # if TaskBar is inactive
                     for map_object in self.list_solid_object:
-                        if map_object.chose(event):  # choice & saving information about it
+                        if map_object.choose(event):  # choice & saving information about it
                             self.chosen_map_object = map_object
                             # if map_object.type == "settler" need to enable TaskBar
                     # elif TaskBar was active need to check the click on the task
@@ -108,5 +116,7 @@ game = Gameplay(screen)
 while not game.finished:
     game.process_input()
     game.draw_map()
+    game.draw_objects()
+    game.display_update()
 
 pg.quit()
