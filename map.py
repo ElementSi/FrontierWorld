@@ -1,6 +1,6 @@
 import numpy as np
 import pygame as pg
-from random import randint
+from random import randint, random
 from PIL import Image, ImageDraw, ImageFilter
 import typing as tp
 
@@ -33,7 +33,11 @@ class Tile:
 
 
 def probability():
-    return 'tree'
+    p = random()
+    if (p >= 0.9):
+        return 'tree'
+    else:
+        return None
 
 
 class Map:
@@ -43,7 +47,7 @@ class Map:
     def __init__(self, surface, size):
         self.surface = surface
         self.size = size
-        self.field = [size[1]][size[0]]
+        self.field = [size[1]/TILE_SIZE][size[0]/TILE_SIZE]
 
         im1 = Image.new("RGB", (80, 45))  # create new picture
         width = im1.size[1]
@@ -64,20 +68,11 @@ class Map:
                 g = pix[i, j][1]
                 b = pix[i, j][2]
 
-                if r > 127 and g > 127 and b > 127:
-                    r = 255
-                    g = 255
-                    b = 255
+                if r > 170 and g > 170 and b > 170:
                     self.field[i][j] = Tile(surface, 'soil', probability())
-                elif r:
-                    r = 0
-                    g = 0
-                    b = 0
+                elif (85 < r < 171 ) and (85 < r < 171)  and (85 < r < 171):
                     self.field[i][j] = Tile(surface, 'sand', ' ')
                 else:
-                    r = 0
-                    g = 0
-                    b = 0
                     self.field[i][j] = Tile(surface, 'rock', ' ')
 
 
