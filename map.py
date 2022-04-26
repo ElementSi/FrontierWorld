@@ -1,7 +1,8 @@
-import pygame
+import numpy as np
 import pygame as pg
 from random import randint
 from PIL import Image, ImageDraw, ImageFilter
+import typing as tp
 
 
 TILE_SIZE = 24
@@ -47,7 +48,7 @@ class Map:
         im1 = Image.new("RGB", (80, 45))  # create new picture
         width = im1.size[1]
         height = im1.size[0]
-        pix = im1.load()  # All pixels from background
+        pix: tp.Optional[np.array] = im1.load()  # All pixels from background
         if pix is not None:
             pix = im1.load()
 

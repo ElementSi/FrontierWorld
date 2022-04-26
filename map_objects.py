@@ -6,6 +6,29 @@ COLORS = {
 }
 
 
+def create_draw_box(coord, draw_features, orientation):
+    """
+    Creating draw box according to draw features of object
+    :param coord: list[float, float] - coordinates of object
+    :param draw_features: additional size that extend the image of the object beyond the limits of the tile
+    :param orientation: string - orientation of object
+    :return:
+    """
+    return ((coord[0] - draw_features[orientation][0]) * TILE_SIZE,
+            (coord[1] - draw_features[orientation][1]) * TILE_SIZE,
+            (1 + 2 * draw_features[orientation][0]) * TILE_SIZE,
+            (1 + draw_features[orientation][1]) * TILE_SIZE)
+
+
+def create_texture(draw_features, orientation):
+    """
+    Creating texture according to draw features of object
+    :param draw_features:
+    :param orientation:
+    :return:
+    """
+
+
 class MapObject:
     """
     Any changeable map object
@@ -22,12 +45,9 @@ class MapObject:
         self.draw_features = {
             "default": [0.0, 0.0, "def_object.png"]
         }
-        self.draw_box = ((coord[0] - self.draw_features["default"][0]) * TILE_SIZE,
-                         (coord[1] - self.draw_features["default"][1]) * TILE_SIZE,
-                         (1 + 2 * self.draw_features["default"][1]) * TILE_SIZE,
-                         (1 + self.draw_features["default"][1]) * TILE_SIZE)
-        self.texture = pg.transform.scale(pg.image.load("textures/def_object.png"),
-                                          ((1 + 2 * self.draw_features["default"][1]) * TILE_SIZE,
+        self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
+        self.texture = pg.transform.scale(pg.image.load("textures/{}".format(self.draw_features["default"][2])),
+                                          ((1 + 2 * self.draw_features["default"][0]) * TILE_SIZE,
                                            (1 + self.draw_features["default"][1]) * TILE_SIZE))
         self.is_chosen = False
         self.type = "def_object"
@@ -106,21 +126,25 @@ class Creature(SolidObject):
         """
         super().__init__(surface, coord, hit_points)
         self.draw_features = {
-            "default": [0.0, 0.0, "def_creation.png"],
-            "up": [0.0, 0.0, "def_creation.png"],
-            "down": [0.0, 0.0, "def_creation.png"],
-            "left": [0.0, 0.0, "def_creation.png"],
-            "right": [0.0, 0.0, "def_creation.png"]
+            "default": [0.0, 0.0, "def_creature.png"],
+            "up": [0.0, 0.0, "def_creature.png"],
+            "down": [0.0, 0.0, "def_creature.png"],
+            "left": [0.0, 0.0, "def_creature.png"],
+            "right": [0.0, 0.0, "def_creature.png"]
         }
-        self.texture = pg.transform.scale(pg.image.load("textures/def_creation.png"),
-                                          ((1 + 2 * self.draw_features["default"][1]) * TILE_SIZE,
+        self.draw_box = ((coord[0] - self.draw_features["default"][0]) * TILE_SIZE,
+                         (coord[1] - self.draw_features["default"][1]) * TILE_SIZE,
+                         (1 + 2 * self.draw_features["default"][0]) * TILE_SIZE,
+                         (1 + self.draw_features["default"][1]) * TILE_SIZE)
+        self.texture = pg.transform.scale(pg.image.load("textures/{}".format(self.draw_features["default"][2])),
+                                          ((1 + 2 * self.draw_features["default"][0]) * TILE_SIZE,
                                            (1 + self.draw_features["default"][1]) * TILE_SIZE))
         self.speed = 0.05  # Base value [tile/tick]
         self.damage = 1.0  # Base value [hit point]
         self.melee_cooldown = 60.0  # Base value [tick]
         self.path = []
         self.direction = [0, 0]
-        self.type = "def_creation"
+        self.type = "def_creature"
 
     def update_image(self):
         """
