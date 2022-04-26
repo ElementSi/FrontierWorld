@@ -47,48 +47,48 @@ class Map:
     def __init__(self, surface, size):
         self.surface = surface
         self.size = size
+        self.width = size[0] // TILE_SIZE
+        self.height = size[1] // TILE_SIZE
         self.field = []
-        for i in range(size[1]//TILE_SIZE):
+        for i in range(self.height):
             self.field.append([])
-            for j in range(size[0]//TILE_SIZE):
+            for j in range(self.width):
                 self.field[-1].append(Tile(surface, 'soil', probability()))
-        # im1 = Image.new("RGB", (80, 45))  # create new picture
-        # width = im1.size[1]
-        # height = im1.size[0]
-        # pix: tp.Optional[np.array] = im1.load()  # All pixels from background
-        # if pix is not None:
-        #     pix = im1.load()
-        #
-        # draw = ImageDraw.Draw(im1)
-        # for i in range(width):
-        #     for j in range (height):
-        #         rand_num = randint(0, 255)
-        #         draw.point((i, j), (rand_num, rand_num, rand_num))
-        # im1 = im1.filter(ImageFilter.GaussianBlur(radius=3))
-        # for i in range(width):
-        #     for j in range(height):
-        #         r = pix[i, j][0]
-        #         g = pix[i, j][1]
-        #         b = pix[i, j][2]
+        im1 = Image.new("RGB", (self.height, self.width))  # create new picture
+        pix: tp.Optional[np.array] = im1.load()  # All pixels from background
+        if pix is not None:
+            pix = im1.load()
 
-                # if r > 170 and g > 170 and b > 170:
-                #     self.field[i][j] = Tile(surface, 'soil', probability())
-                # elif (85 < r < 171 ) and (85 < r < 171)  and (85 < r < 171):
-                #     self.field[i][j] = Tile(surface, 'sand', ' ')
-                # else:
-                #     self.field[i][j] = Tile(surface, 'rock', ' ')
+        draw = ImageDraw.Draw(im1)
+        for i in range(self.height):
+            for j in range (self.width):
+                rand_num = randint(0, 255)
+                draw.point((i, j), (rand_num, rand_num, rand_num))
+        im1 = im1.filter(ImageFilter.GaussianBlur(radius=3))
+        for i in range(self.height):
+            for j in range(self.width):
+                r = pix[i, j][0]
+                g = pix[i, j][1]
+                b = pix[i, j][2]
+
+                if r > 170 and g > 170 and b > 170:
+                     self.field[i][j] = Tile(surface, 'soil', probability())
+                elif (85 < r < 171 ) and (85 < r < 171)  and (85 < r < 171):
+                     self.field[i][j] = Tile(surface, 'sand', ' ')
+                else:
+                     self.field[i][j] = Tile(surface, 'rock', ' ')
 
 
 
                 #if self.field[i] == size[1]//2 and self.field[j] == size[0]/2:
-                #    for k in range (randint(10,100)):
-                #        self.field[size[1]//2+k][size[0]//2+k] = Tile(surface,'soil', probability()) #fill the middle with soil
+                #   for k in range (randint(10,100)):
+                #       self.field[size[1]//2+k][size[0]//2+k] = Tile(surface,'soil', probability()) #fill the middle with soil
                 #elif self.field[i] == 0 & self.field[j] == 0:
-                #    for p in range (randint(30,90)):
-                #        self.field[p][p] = Tile(surface, 'sand', ' ') #fill the upper left corner with sand
+                #   for p in range (randint(30,90)):
+                #       self.field[p][p] = Tile(surface, 'sand', ' ') #fill the upper left corner with sand
                 #elif self.field[i] == size[1] and self.field[j] == size[0]:
-                #    for l in range (randint(10,30)):
-                #        self.field[l][l] = Tile(surface, 'rock', ' ') # fill the  upper right corner with rock
+                #   for l in range (randint(10,30)):
+                #       self.field[l][l] = Tile(surface, 'rock', ' ') # fill the  upper right corner with rock
 
         # Добавить в pre-object вероятность возникновения объекта (rock, tree, bush)
         # Главная и сложная задача - написать интересную случайную генерацию карты,
@@ -117,7 +117,8 @@ class Map:
         for i in range(self.size[1] // TILE_SIZE):
             for j in range(self.size[0] // TILE_SIZE):
                 tile_rect = (j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-                pg.draw.rect(self.surface, 'green', tile_rect)
+                landscape_texture = LANDSCAPE[self.field[i][j].type][1]
+                self.surface.blit(landscape_texture, tile_rect)
 
     def safe(self, file):
         """
