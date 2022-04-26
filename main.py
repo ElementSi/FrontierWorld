@@ -39,6 +39,7 @@ class Gameplay:
         """
         Drawing every map tile
         """
+        self.map.draw()
 
     def draw_objects(self):
         """
@@ -106,5 +107,6 @@ game = Gameplay(screen)
 
 while not game.finished:
     game.process_input()
+    game.draw_map()
 
 pg.quit()

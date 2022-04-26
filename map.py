@@ -1,6 +1,6 @@
 import numpy as np
 import pygame as pg
-from random import randint
+from random import randint, random
 from PIL import Image, ImageDraw, ImageFilter
 import typing as tp
 
@@ -33,7 +33,11 @@ class Tile:
 
 
 def probability():
-    return 'tree'
+    p = random()
+    if (p >= 0.9):
+        return 'tree'
+    else:
+        return None
 
 
 class Map:
@@ -43,42 +47,36 @@ class Map:
     def __init__(self, surface, size):
         self.surface = surface
         self.size = size
-        self.field = [size[1]][size[0]]
+        self.field = []
+        for i in range(size[1]//TILE_SIZE):
+            self.field.append([])
+            for j in range(size[0]//TILE_SIZE):
+                self.field[-1].append(Tile(surface, 'soil', probability()))
+        # im1 = Image.new("RGB", (80, 45))  # create new picture
+        # width = im1.size[1]
+        # height = im1.size[0]
+        # pix: tp.Optional[np.array] = im1.load()  # All pixels from background
+        # if pix is not None:
+        #     pix = im1.load()
+        #
+        # draw = ImageDraw.Draw(im1)
+        # for i in range(width):
+        #     for j in range (height):
+        #         rand_num = randint(0, 255)
+        #         draw.point((i, j), (rand_num, rand_num, rand_num))
+        # im1 = im1.filter(ImageFilter.GaussianBlur(radius=3))
+        # for i in range(width):
+        #     for j in range(height):
+        #         r = pix[i, j][0]
+        #         g = pix[i, j][1]
+        #         b = pix[i, j][2]
 
-        im1 = Image.new("RGB", (80, 45))  # create new picture
-        width = im1.size[1]
-        height = im1.size[0]
-        pix: tp.Optional[np.array] = im1.load()  # All pixels from background
-        if pix is not None:
-            pix = im1.load()
-
-        draw = ImageDraw.Draw(im1)
-        for i in range(width):
-            for j in range(height):
-                rand_num = randint(0, 255)
-                draw.point((i, j), (rand_num, rand_num, rand_num))
-        im1 = im1.filter(ImageFilter.GaussianBlur(radius=3))
-        for i in range(width):
-            for j in range(height):
-                r = pix[i, j][0]
-                g = pix[i, j][1]
-                b = pix[i, j][2]
-
-                if r > 127 and g > 127 and b > 127:
-                    r = 255
-                    g = 255
-                    b = 255
-                    self.field[i][j] = Tile(surface, 'soil', probability())
-                elif r:
-                    r = 0
-                    g = 0
-                    b = 0
-                    self.field[i][j] = Tile(surface, 'sand', ' ')
-                else:
-                    r = 0
-                    g = 0
-                    b = 0
-                    self.field[i][j] = Tile(surface, 'rock', ' ')
+                # if r > 170 and g > 170 and b > 170:
+                #     self.field[i][j] = Tile(surface, 'soil', probability())
+                # elif (85 < r < 171 ) and (85 < r < 171)  and (85 < r < 171):
+                #     self.field[i][j] = Tile(surface, 'sand', ' ')
+                # else:
+                #     self.field[i][j] = Tile(surface, 'rock', ' ')
 
 
 
@@ -112,12 +110,14 @@ class Map:
         """
         return self.field[coord[0]][coord[1]].speed_mod
 
-    def draw(self, surface):
+    def draw(self):
         """
         Drawing the whole map in the current window
         """
-        # pygame.draw.rect(surface, 'green', Tile(self.rect))
-        pass
+        for i in range(self.size[1] // TILE_SIZE):
+            for j in range(self.size[0] // TILE_SIZE):
+                tile_rect = (j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+                pg.draw.rect(self.surface, 'green', tile_rect)
 
     def safe(self, file):
         """

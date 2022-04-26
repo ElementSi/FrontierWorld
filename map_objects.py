@@ -27,6 +27,9 @@ def create_texture(draw_features, orientation):
     :param orientation:
     :return:
     """
+    return pg.transform.scale(pg.image.load("textures/{}".format(draw_features[orientation][2])),
+                              ((1 + 2 * draw_features[orientation][0]) * TILE_SIZE,
+                               (1 + draw_features[orientation][1]) * TILE_SIZE))
 
 
 class MapObject:
@@ -46,9 +49,7 @@ class MapObject:
             "default": [0.0, 0.0, "def_object.png"]
         }
         self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
-        self.texture = pg.transform.scale(pg.image.load("textures/{}".format(self.draw_features["default"][2])),
-                                          ((1 + 2 * self.draw_features["default"][0]) * TILE_SIZE,
-                                           (1 + self.draw_features["default"][1]) * TILE_SIZE))
+        self.texture = create_texture(self.draw_features, "default")
         self.is_chosen = False
         self.type = "def_object"
 
@@ -59,8 +60,8 @@ class MapObject:
         :return: bool - is object chosen
         """
         pos = event.get_pos()
-        if abs(pos[0] - self.coord[0] * TILE_SIZE) <= TILE_SIZE and abs(
-                pos[1] - self.coord[1] * TILE_SIZE) <= TILE_SIZE:
+        if abs(pos[0] - self.coord[0] * TILE_SIZE) <= TILE_SIZE and \
+                abs(pos[1] - self.coord[1] * TILE_SIZE) <= TILE_SIZE:
             self.is_chosen = True
 
         return self.is_chosen
@@ -70,6 +71,10 @@ class MapObject:
         Drawing object in the current window
         """
         self.surface.blit(self.texture, self.draw_box)
+        tile_box = (self.coord[0] * TILE_SIZE,
+                    self.coord[1] * TILE_SIZE,
+                    TILE_SIZE,
+                    TILE_SIZE)
         if self.is_chosen:
             pg.draw.rect(self.surface, COLORS["white"], self.draw_box, 3)
 
@@ -171,9 +176,9 @@ class Creature(SolidObject):
         """
         if next_coord[0] < self.coord[0]:
             if next_coord[1] < self.coord[1]:
-                return [-1 / (2**0.5), -1 / (2**0.5)]
+                return [-1 / (2 ** 0.5), -1 / (2 ** 0.5)]
             if next_coord[1] > self.coord[1]:
-                return [-1 / (2**0.5), 1 / (2**0.5)]
+                return [-1 / (2 ** 0.5), 1 / (2 ** 0.5)]
             return [-1, 0]
 
         if next_coord[0] > self.coord[0]:
@@ -182,8 +187,10 @@ class Creature(SolidObject):
             if next_coord[1] > self.coord[1]:
                 return [1 / (2 ** 0.5), 1 / (2 ** 0.5)]
             return [1, 0]
+
         if next_coord[1] > self.coord[1]:
             return [0, 1]
+
         if next_coord[1] < self.coord[1]:
             return [0, -1]
 
