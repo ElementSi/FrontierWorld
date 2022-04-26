@@ -35,7 +35,6 @@ def probability():
     return 'tree'
 
 
-
 class Map:
     """
     Map consisting of tiles arranged in a grid

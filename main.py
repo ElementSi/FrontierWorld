@@ -22,8 +22,8 @@ class Gameplay:
         """
         self.surface = surface
         self.clock = pg.time.Clock()
-        self.map = reg_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])  # Need to add map class
-        self.list_solid_object = []  # Need to add settler, animals, nature objects, maybe constructions of loot
+        self.map = reg_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])
+        self.list_solid_object = []  # need to add settler, animals, nature objects, maybe constructions of loot
         self.list_effects = []
         self.list_loot = []
         self.chosen_map_object = None
@@ -67,9 +67,15 @@ class Gameplay:
 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if self.chosen_task is None:
+                    # if TaskBar is inactive
                     for map_object in self.list_solid_object:
-                        if map_object.chose(event):
+                        if map_object.chose(event):  # choice & saving information about it
                             self.chosen_map_object = map_object
+                            # if map_object.type == "settler" need to enable TaskBar
+                    # elif TaskBar was active need to check the click on the task
+
+                elif self.chosen_task == "Move to":
+                    pass  # need to use function move_to
 
     def move_creation(self):
         """
