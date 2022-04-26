@@ -54,7 +54,7 @@ class Map:
 
         draw = ImageDraw.Draw(im1)
         for i in range(width):
-            for j in range (height):
+            for j in range(height):
                 rand_num = randint(0, 255)
                 draw.point((i, j), (rand_num, rand_num, rand_num))
         im1 = im1.filter(ImageFilter.GaussianBlur(radius=3))

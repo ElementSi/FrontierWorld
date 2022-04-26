@@ -176,7 +176,7 @@ class Creature(SolidObject):
                 return [-1 / (2**0.5), 1 / (2**0.5)]
             return [-1, 0]
 
-        if next_coord[0] > self.coord[0]:  # check if next_coord[x] > self.coord[x]
+        if next_coord[0] > self.coord[0]:
             if next_coord[1] < self.coord[1]:
                 return [1 / (2 ** 0.5), -1 / (2 ** 0.5)]
             if next_coord[1] > self.coord[1]:
@@ -187,12 +187,6 @@ class Creature(SolidObject):
         if next_coord[1] < self.coord[1]:
             return [0, -1]
 
-    def move(self):
-        """
-        Moving to its goal
-        """
-        pass  # need to describe moving along the path from tile to tile
-
     def death(self):
         """
         Processing of death effects
@@ -202,6 +196,17 @@ class Creature(SolidObject):
         death_effect = Effect(self.surface, self.coord, effect_texture, effect_lifetime)
         return death_effect
         # need to return corpse
+
+
+def move(creature, way):
+    """
+    Moving to its goal
+    :param creature: Creature - object on the way
+    :param way: list[coord](coord: [float, float]) massive
+    """
+    for item_of_coord in way:
+        creature.coord[0] += creature.define_direction(creature, item_of_coord)[0] * creature.speed
+        creature.coord[1] += creature.define_direction(creature, item_of_coord)[1] * creature.speed
 
 
 class Animal(Creature):
