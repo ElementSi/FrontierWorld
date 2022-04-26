@@ -39,7 +39,7 @@ class Gameplay:
         """
         Drawing every map tile
         """
-        self.map.draw(self.surface)
+        self.map.draw()
 
     def draw_objects(self):
         """

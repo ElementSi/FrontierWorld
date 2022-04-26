@@ -51,10 +51,7 @@ class Map:
         for i in range(size[1]//TILE_SIZE):
             self.field.append([])
             for j in range(size[0]//TILE_SIZE):
-                self.field[-1].append(0)
-        for i in range(size[1]//TILE_SIZE):
-            for j in range(size[0] // TILE_SIZE):
-                self.field[i][j] = Tile(surface, 'soil', probability())
+                self.field[-1].append(Tile(surface, 'soil', probability()))
         # im1 = Image.new("RGB", (80, 45))  # create new picture
         # width = im1.size[1]
         # height = im1.size[0]
@@ -113,13 +110,13 @@ class Map:
         """
         return self.field[coord[0]][coord[1]].speed_mod
 
-    def draw(self, surface):
+    def draw(self):
         """
         Drawing the whole map in the current window
         """
         for i in range(self.size[1] // TILE_SIZE):
             for j in range(self.size[0] // TILE_SIZE):
-                tile_rect = (j*TILE_SIZE, i*TILE_SIZE, TILE_SIZE, TILE_SIZE)
+                tile_rect = (j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE)
                 pg.draw.rect(self.surface, 'green', tile_rect)
 
     def safe(self, file):
