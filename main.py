@@ -1,8 +1,5 @@
 import pygame as pg
 import random as rnd
-
-import pygame.display
-
 import map_objects as obj
 import map as reg_map
 
@@ -111,6 +108,5 @@ game = Gameplay(screen)
 while not game.finished:
     game.process_input()
     game.draw_map()
-    pygame.display.update()
 
 pg.quit()
