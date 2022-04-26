@@ -73,12 +73,17 @@ class Gameplay:
                 if event.key == 27:  # Esk.key = 27
                     if self.chosen_map_object is None:
                         self.finished = True
+                    else:
+                        self.chosen_map_object.is_chosen = False
+                        self.chosen_map_object = None
 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if self.chosen_task is None:
                     # if TaskBar is inactive
                     for map_object in self.list_solid_object:
                         if map_object.choose(event):  # choice & saving information about it
+                            if self.chosen_map_object is not None:
+                                self.chosen_map_object.is_chosen = False
                             self.chosen_map_object = map_object
                             # if map_object.type == "settler" need to enable TaskBar
                     # elif TaskBar was active need to check the click on the task
@@ -114,9 +119,9 @@ screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 game = Gameplay(screen)
 
 while not game.finished:
-    game.process_input()
     game.draw_map()
     game.draw_objects()
+    game.process_input()
     game.display_update()
 
 pg.quit()

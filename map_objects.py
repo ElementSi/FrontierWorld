@@ -60,8 +60,8 @@ class MapObject:
         :return: bool - is object chosen
         """
         pos = event.pos
-        if abs(pos[0] - self.coord[0] * TILE_SIZE) <= TILE_SIZE and \
-                abs(pos[1] - self.coord[1] * TILE_SIZE) <= TILE_SIZE:
+        if abs(pos[0] - (self.coord[0] + 0.5) * TILE_SIZE) < TILE_SIZE - 1 and \
+                abs(pos[1] - (self.coord[1] + 0.5) * TILE_SIZE) < TILE_SIZE - 1:
             self.is_chosen = True
 
         return self.is_chosen
@@ -76,7 +76,7 @@ class MapObject:
                     TILE_SIZE,
                     TILE_SIZE)
         if self.is_chosen:
-            pg.draw.rect(self.surface, COLORS["white"], self.draw_box, 3)
+            pg.draw.rect(self.surface, COLORS["white"], tile_box, 3)
 
     def safe(self, file):
         """
@@ -402,8 +402,11 @@ class Tree(Plant):
         :param hit_points: int - current object hit points
         """
         super().__init__(surface, coord, hit_points)
-        # self.draw_box
-        self.texture = pg.transform.scale(pg.image.load("textures/tree.png"), (TILE_SIZE, TILE_SIZE))
+        self.draw_features = {
+            "default": [0.5, 1.5, "tree.png"]
+        }
+        self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
+        self.texture = create_texture(self.draw_features, "default")
         self.res_quantity = 150
         self.type = "tree"
 
