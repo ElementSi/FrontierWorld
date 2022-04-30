@@ -23,12 +23,13 @@ class Gameplay:
         self.surface = surface
         self.clock = pg.time.Clock()
         self.map = reg_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])
+        self.settler = obj.Settler(self.surface, [self.map.width // 2, self.map.height // 2], 20)
         self.list_solid_object = []
 
         for i in range(self.map.height):
             for j in range(self.map.width):
                 if self.map.field[i][j].pre_object == "tree":
-                    self.list_solid_object.append(obj.Tree(self.surface, [i, j], 80))
+                    self.list_solid_object.append(obj.Tree(self.surface, [j, i], 80))
 
         self.list_effects = []
         self.list_loot = []
@@ -51,8 +52,13 @@ class Gameplay:
         """
         Drawing every object
         """
+        self.settler.draw()
+
         for solid_object in self.list_solid_object:
             solid_object.draw()
+
+        if self.chosen_map_object is not None:
+            self.chosen_map_object.draw_frame()
 
     def display_update(self):
         """
@@ -80,12 +86,27 @@ class Gameplay:
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if self.chosen_task is None:
                     # if TaskBar is inactive
-                    for map_object in self.list_solid_object:
-                        if map_object.choose(event):  # choice & saving information about it
-                            if self.chosen_map_object is not None:
-                                self.chosen_map_object.is_chosen = False
-                            self.chosen_map_object = map_object
-                            # if map_object.type == "settler" need to enable TaskBar
+
+                    none_is_chosen = True
+
+                    for solid_object in self.list_solid_object:
+                        if solid_object.choose(event):  # choice of solid object & saving information about it
+                            none_is_chosen = False
+                            self.chosen_map_object = solid_object
+
+                    for loot_item in self.list_loot:
+                        if loot_item.choose(event):  # choice of loot item & saving information about it
+                            none_is_chosen = False
+                            self.chosen_map_object = loot_item
+
+                    if self.settler.choose(event):  # choice of settler & saving information about it
+                        none_is_chosen = False
+                        self.chosen_map_object = self.settler
+                        #  need to enable TaskBar
+
+                    if none_is_chosen:
+                        self.chosen_map_object = None
+
                     # elif TaskBar was active need to check the click on the task
 
                 elif self.chosen_task == "Move to":
