@@ -1,9 +1,11 @@
-import numpy as np
-import pygame as pg
-from random import randint, random
-from PIL import Image, ImageDraw, ImageFilter
-import typing as tp
+from random import random, randint
 
+import PIL
+import pygame as pg
+from PIL import Image, ImageDraw
+from perlin import PerlinNoiseFactory
+import typing as tp
+import numpy as np
 
 TILE_SIZE = 24
 
@@ -34,7 +36,7 @@ class Tile:
 
 def probability():
     p = random()
-    if (p >= 0.9):
+    if p >= 0.9:
         return 'tree'
     else:
         return None
@@ -50,49 +52,70 @@ class Map:
         self.width = size[0] // TILE_SIZE
         self.height = size[1] // TILE_SIZE
         self.field = []
-        for i in range(self.height):
-            self.field.append([])
-            for j in range(self.width):
-                self.field[-1].append(Tile(surface, 'soil', probability()))
-        im1 = Image.new("RGB", (self.height, self.width))  # create new picture
-        pix: tp.Optional[np.array] = im1.load()  # All pixels from background
-        if pix is not None:
-            pix = im1.load()
 
-        draw = ImageDraw.Draw(im1)
-        for i in range(self.height):
-            for j in range (self.width):
-                rand_num = randint(0, 255)
-                draw.point((i, j), (rand_num, rand_num, rand_num))
-        im1 = im1.filter(ImageFilter.GaussianBlur(radius=3))
-        for i in range(self.height):
-            for j in range(self.width):
-                r = pix[i, j][0]
-                g = pix[i, j][1]
-                b = pix[i, j][2]
+        res = 40
+        frames = 20
+        frameres = 5
+        space_range = size // res
+        frame_range = frames // frameres
 
-                if r > 170 and g > 170 and b > 170:
-                     self.field[i][j] = Tile(surface, 'soil', probability())
-                elif (85 < r < 171 ) and (85 < r < 171)  and (85 < r < 171):
-                     self.field[i][j] = Tile(surface, 'sand', ' ')
-                else:
-                     self.field[i][j] = Tile(surface, 'rock', ' ')
+        pnf = PerlinNoiseFactory(3, octaves=4, tile=(space_range, space_range, frame_range))
+
+        for t in range(frames):
+            img = PIL.Image.new('L', (size, size))
+            for x in range(size):
+                for y in range(size):
+                    n = pnf(x / res, y / res, t / frameres)
+                    img.putpixel((x, y), int((n + 1) / 2 * 255 + 0.5))
+            pix: tp.Optional[np.array] = img.load()  # All pixels from background
+
+            draw = ImageDraw.Draw(img)
+            for i in range(self.height):
+                for j in range (self.width):
+                     rand_num = randint(0, 255)
+                     draw.point((i, j), (rand_num, rand_num, rand_num))
+            for i in range(self.height):
+                for j in range(self.width):
+                     r = pix[i, j][0]
+                     g = pix[i, j][1]
+                     b = pix[i, j][2]
+
+                     if r > 100 and g > 100 and b > 100:
+                          self.field[i][j] = Tile(surface, 'soil', probability())
+                     elif (45 < r < 101 ) and (45 < r < 101)  and (45 < r < 101):
+                          self.field[i][j] = Tile(surface, 'sand', ' ')
+                     else:
+                          self.field[i][j] = Tile(surface, 'rock', ' ')
 
 
 
-                #if self.field[i] == size[1]//2 and self.field[j] == size[0]/2:
-                #   for k in range (randint(10,100)):
-                #       self.field[size[1]//2+k][size[0]//2+k] = Tile(surface,'soil', probability()) #fill the middle with soil
-                #elif self.field[i] == 0 & self.field[j] == 0:
-                #   for p in range (randint(30,90)):
-                #       self.field[p][p] = Tile(surface, 'sand', ' ') #fill the upper left corner with sand
-                #elif self.field[i] == size[1] and self.field[j] == size[0]:
-                #   for l in range (randint(10,30)):
-                #       self.field[l][l] = Tile(surface, 'rock', ' ') # fill the  upper right corner with rock
+        # for i in range(self.height):
+        #     self.field.append([])
+        #     for j in range(self.width):
+        #         self.field[-1].append(Tile(surface, 'soil', probability()))
+        # im1 = Image.new("RGB", (self.height, self.width))  # create new picture
+        # pix: tp.Optional[np.array] = im1.load()  # All pixels from background
+        # if pix is not None:
+        #     pix = im1.load()
+        #
+        # draw = ImageDraw.Draw(im1)
+        # for i in range(self.height):
+        #     for j in range (self.width):
+        #         rand_num = randint(0, 255)
+        #         draw.point((i, j), (rand_num, rand_num, rand_num))
+        # for i in range(self.height):
+        #     for j in range(self.width):
+        #         r = pix[i, j][0]
+        #         g = pix[i, j][1]
+        #         b = pix[i, j][2]
+        #
+        #         if r > 100 and g > 100 and b > 100:
+        #              self.field[i][j] = Tile(surface, 'soil', probability())
+        #         elif (45 < r < 101 ) and (45 < r < 101)  and (45 < r < 101):
+        #              self.field[i][j] = Tile(surface, 'sand', ' ')
+        #         else:
+        #              self.field[i][j] = Tile(surface, 'rock', ' ')
 
-        # Добавить в pre-object вероятность возникновения объекта (rock, tree, bush)
-        # Главная и сложная задача - написать интересную случайную генерацию карты,
-        # которая будет распределять по ней типы поверхности, а затем объекты, наследующие классу NaturalObjects.
 
     def get_pre_object(self, coord):
         """

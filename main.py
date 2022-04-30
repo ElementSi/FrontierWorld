@@ -1,5 +1,4 @@
 import pygame as pg
-import random as rnd
 import map_objects as obj
 import map as reg_map
 
