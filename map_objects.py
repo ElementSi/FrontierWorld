@@ -2,9 +2,18 @@ import pygame as pg
 import random as rnd
 from map import TILE_SIZE
 
-
 COLORS = {
     "white": (255, 255, 255)
+}
+
+TASKS = {
+    "chop": "object_task",
+    "harvest_berries": "object_task",
+    "attack": "object_task",
+    "construct": "tile_task",
+    "move_to": "tile_task",
+    "pick_up_loot": "object_task",
+    "dig": "object_task"
 }
 
 
@@ -34,6 +43,47 @@ def create_texture(draw_features, orientation):
                                (1 + draw_features[orientation][1]) * TILE_SIZE))
 
 
+def is_picked(event, coord):
+    """
+    Choice object be mouse click
+    :param event: Pygame event object - MOUSEBOTTONDOWN event from queue
+    :param coord: list[float, float] - coordinates of object
+    :return: bool - is object chosen
+    """
+    pos = event.pos
+    return abs(pos[0] - (coord[0] + 0.5) * TILE_SIZE) < TILE_SIZE / 2 and abs(
+        pos[1] - (coord[1] + 0.5) * TILE_SIZE) < TILE_SIZE / 2
+
+
+class Task:
+    """
+    Task for the colonist
+    """
+
+    def __init__(self, task_type):
+        self.task_type = task_type
+
+
+class ObjectTask(Task):
+    """
+    Task whose purpose is to interact with an object
+    """
+
+    def __init__(self, task_type, target_object):
+        super().__init__(task_type)
+        self.target_object = target_object
+
+
+class TileTask(Task):
+    """
+    Task whose goal is a tile
+    """
+
+    def __init__(self, task_type, target_tile):
+        super().__init__(task_type)
+        self.target_object = target_tile
+
+
 class MapObject:
     """
     Any changeable map object
@@ -52,39 +102,13 @@ class MapObject:
         }
         self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
         self.texture = create_texture(self.draw_features, "default")
-        self.is_chosen = False
         self.type = "def_object"
-
-    def choose(self, event):
-        """
-        Choice object be mouse click
-        :param event: Pygame event object - MOUSEBOTTONDOWN event from queue
-        :return: bool - is object chosen
-        """
-        pos = event.pos
-        if abs(pos[0] - (self.coord[0] + 0.5) * TILE_SIZE) < TILE_SIZE / 2 and \
-                abs(pos[1] - (self.coord[1] + 0.5) * TILE_SIZE) < TILE_SIZE / 2:
-            self.is_chosen = True
-        else:
-            self.is_chosen = False
-
-        return self.is_chosen
 
     def draw(self):
         """
         Drawing object in the current window
         """
         self.surface.blit(self.texture, self.draw_box)
-
-    def draw_frame(self):
-        """
-        Drawing frame around the chosen object
-        """
-        tile_box = (self.coord[0] * TILE_SIZE,
-                    self.coord[1] * TILE_SIZE,
-                    TILE_SIZE,
-                    TILE_SIZE)
-        pg.draw.rect(self.surface, COLORS["white"], tile_box, 3)
 
     def safe(self, file):
         """
@@ -107,9 +131,32 @@ class SolidObject(MapObject):
         :param hit_points: int - current object hit points
         """
         super().__init__(surface, coord)
-        self.full_hit_points = 10
-        self.hit_points = hit_points
+        self.full_hit_points = 10.0
+        if hit_points > self.full_hit_points:
+            self.hit_points = self.full_hit_points
+        else:
+            self.hit_points = hit_points
+        self.is_chosen = False
         self.type = "def_solid_object"
+
+    def choose(self, event):
+        """
+        Choice object be mouse click
+        :param event: Pygame event object - MOUSEBOTTONDOWN event from queue
+        :return: bool - is object chosen
+        """
+        self.is_chosen = is_picked(event, self.coord)
+        return self.is_chosen
+
+    def draw_frame(self):
+        """
+        Drawing frame around the chosen object
+        """
+        tile_box = (self.coord[0] * TILE_SIZE,
+                    self.coord[1] * TILE_SIZE,
+                    TILE_SIZE,
+                    TILE_SIZE)
+        pg.draw.rect(self.surface, COLORS["white"], tile_box, 3)
 
     def safe(self, file):
         """
@@ -155,6 +202,7 @@ class Creature(SolidObject):
         self.melee_cooldown = 60.0  # Base value [tick]
         self.path = []
         self.direction = [0, 0]
+        self.task = None
         self.type = "def_creature"
 
     def update_image(self):
@@ -226,7 +274,7 @@ class Creature(SolidObject):
             if self.direction == [0, 0]:
                 self.direction = self.define_direction(self.path[0])
 
-            max_shift = self.speed * region_map.field[int(self.coord[1])][int(self.coord[0])].speed_mod
+            max_shift = self.speed * region_map.field[int(self.coord[1] + 0.5)][int(self.coord[0] + 0.5)].speed_mod
             #                        checking speed modifier of current tile
 
             next_tile_dist = ((self.coord[0] - self.path[0][0]) ** 2 + (self.coord[1] - self.path[0][1]) ** 2) ** 0.5
@@ -244,6 +292,17 @@ class Creature(SolidObject):
 
         if len(self.path) == 0:
             self.direction = [0, 0]
+
+        self.update_image()
+
+    def move_to(self):
+        pass  # approach a specific tile
+
+    def attack(self):
+        pass  # approach a specific creature and beat it
+
+    def do_task(self):
+        pass  # do task from the self.task
 
     def death(self):
         """
@@ -263,7 +322,7 @@ class Animal(Creature):
     Animals controlled by AI
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points, was_attacked=False):
         """
         Universal constructor of animal
         :param surface: Pygame Surface object - target window
@@ -272,11 +331,14 @@ class Animal(Creature):
         """
         super().__init__(surface, coord, hit_points)
         self.activity_rate = 0.1  # Base value, some relative coefficient
-        self.is_aggressive = False
+        self.was_attacked = was_attacked
         self.type = "def_animal"
 
     def decide_to_move(self):
-        pass  # need to call pathfinder with random chance
+        pass  # need to create task "move_to" with random chance
+
+    def decide_to_attack(self):
+        pass  # need to create task "attack" if animal was attacked
 
 
 class Settler(Creature):
@@ -301,9 +363,31 @@ class Settler(Creature):
         }
         self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
         self.texture = create_texture(self.draw_features, "default")
-        self.hit_points = 20.0
+        self.full_hit_points = 20.0
+        if hit_points > self.full_hit_points:
+            self.hit_points = self.full_hit_points
+        else:
+            self.hit_points = hit_points
         self.damage = 2.0
         self.type = "settler"
+
+    def chop(self):
+        pass  # approach a specific tree/bush and cut it down
+
+    def harvest_berries(self):
+        pass  # approach a specific riped bush and pick berries
+
+    def construct(self):
+        pass
+        # check if there are enough resources in the inventory;
+        # if there are enough resources, go to a specific tile and create a structure there,
+        # if not, find more resources on the map
+
+    def pick_up_loot(self):
+        pass  # approach a specific loot item and take all the resources from it
+
+    def dig(self):
+        pass  # approach a specific cliff and dig it
 
     def death(self):
         """
@@ -335,7 +419,11 @@ class Deer(Animal):
         }
         self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
         self.texture = create_texture(self.draw_features, "default")
-        self.hit_points = 30.0
+        self.full_hit_points = 30.0
+        if hit_points > self.full_hit_points:
+            self.hit_points = self.full_hit_points
+        else:
+            self.hit_points = hit_points
         self.speed = 0.8
         self.damage = 0.5
         self.melee_cooldown = 120.0
@@ -365,7 +453,11 @@ class Wolf(Animal):
         self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
         self.texture = create_texture(self.draw_features, "default")
         self.speed = 0.7
-        self.hit_points = 16.0
+        self.full_hit_points = 16.0
+        if hit_points > self.full_hit_points:
+            self.hit_points = self.full_hit_points
+        else:
+            self.hit_points = hit_points
         self.damage = 3.0
         self.type = "wolf"
 
@@ -441,6 +533,11 @@ class Cliff(NatureObject):
         }
         self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
         self.texture = create_texture(self.draw_features, "default")
+        self.full_hit_points = 30.0
+        if hit_points > self.full_hit_points:
+            self.hit_points = self.full_hit_points
+        else:
+            self.hit_points = hit_points
         self.res_type = "stone"
         self.res_quantity = 30
         self.type = "cliff"
@@ -481,6 +578,11 @@ class Tree(Plant):
         }
         self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
         self.texture = create_texture(self.draw_features, "default")
+        self.full_hit_points = 20.0
+        if hit_points > self.full_hit_points:
+            self.hit_points = self.full_hit_points
+        else:
+            self.hit_points = hit_points
         self.res_quantity = 150
         self.type = "tree"
 
@@ -666,7 +768,27 @@ class Loot(MapObject):
         :param coord: list[int, int] - coordinates of object
         """
         super().__init__(surface, coord)
+        self.is_chosen = False
         self.type = "def_loot"
+
+    def choose(self, event):
+        """
+        Choice object be mouse click
+        :param event: Pygame event object - MOUSEBOTTONDOWN event from queue
+        :return: bool - is object chosen
+        """
+        self.is_chosen = is_picked(event, self.coord)
+        return self.is_chosen
+
+    def draw_frame(self):
+        """
+        Drawing frame around the chosen object
+        """
+        tile_box = (self.coord[0] * TILE_SIZE,
+                    self.coord[1] * TILE_SIZE,
+                    TILE_SIZE,
+                    TILE_SIZE)
+        pg.draw.rect(self.surface, COLORS["white"], tile_box, 3)
 
 
 class Corpse(Loot):
@@ -727,6 +849,10 @@ class Resources(Loot):
         self.res_quantity = res_quantity
         self.resource_type = resource_type
         self.type = "resources"
+
+    def draw(self):
+        super().draw()
+        # need to draw the quantity of resources in this stack
 
     def take(self, res_quantity):
         """
