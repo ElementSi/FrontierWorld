@@ -111,7 +111,7 @@ class SolidObject(MapObject):
     Material object with limited hit points
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=10.0):
         """
         Universal constructor of solid object
         :param surface: Pygame Surface object - target window
@@ -168,7 +168,7 @@ class Creature(SolidObject):
     Creature that can move and proceed more complex tasks
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=10.0):
         """
         Universal constructor of creature
         :param surface: Pygame Surface object - target window
@@ -310,7 +310,7 @@ class Animal(Creature):
     Animals controlled by AI
     """
 
-    def __init__(self, surface, coord, hit_points, was_attacked=False):
+    def __init__(self, surface, coord, hit_points=10.0, was_attacked=False):
         """
         Universal constructor of animal
         :param surface: Pygame Surface object - target window
@@ -334,7 +334,7 @@ class Settler(Creature):
     Settler controlled by player
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=20.0):
         """
         Constructor of settler
         :param surface: Pygame Surface object - target window
@@ -390,7 +390,7 @@ class Deer(Animal):
     Large herbivore animal
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=30.0):
         """
         Constructor of deer
         :param surface: Pygame Surface object - target window
@@ -423,7 +423,7 @@ class Wolf(Animal):
     Medium size predatory animal
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=16.0):
         """
         Constructor of wolf
         :param surface: Pygame Surface object - target window
@@ -455,7 +455,7 @@ class Turtle(Animal):
     Small herbivore in a shell
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=10.0):
         """
         Constructor of turtle
         :param surface: Pygame Surface object - target window
@@ -483,7 +483,7 @@ class NatureObject(SolidObject):
     Solid object of flora or inanimate nature, impassable
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=10.0):
         """
         Universal constructor of nature object
         :param surface: Pygame Surface object - target window
@@ -508,7 +508,7 @@ class Cliff(NatureObject):
     Part of the rock that rises above the map
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=30.0):
         """
         Constructor of cliff
         :param surface: Pygame Surface object - target window
@@ -536,7 +536,7 @@ class Plant(NatureObject):
     Representative of the local flora
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=10.0):
         """
         Universal constructor of plant
         :param surface: Pygame Surface object - target window
@@ -553,7 +553,7 @@ class Tree(Plant):
     Large plant, contains a lot of wood
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=20.0):
         """
         Constructor of tree
         :param surface: Pygame Surface object - target window
@@ -580,7 +580,7 @@ class Bush(Plant):
     Low-growing plant that contains berries
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=10.0):
         """
         Constructor of tree
         :param surface: Pygame Surface object - target window
@@ -628,7 +628,7 @@ class Construction(SolidObject):
     Constructions built by player
     """
 
-    def __init__(self, surface, coord, hit_points):
+    def __init__(self, surface, coord, hit_points=10.0):
         """
         Universal constructor of construction
         :param surface: Pygame Surface object - target window

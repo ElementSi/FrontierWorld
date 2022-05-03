@@ -123,6 +123,11 @@ class Button:
             self.color = self.original_color
 
     def is_pushed(self, event):
+        """
+        Checking whether the button is pressed
+        :param event: Pygame event object - MOUSEBUTTONDOWN event from queue
+        :return: bool - is tile hovered at the moment of the click
+        """
         return is_hovered(event, self.draw_box)
 
 
