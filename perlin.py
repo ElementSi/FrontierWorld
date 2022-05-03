@@ -16,7 +16,7 @@ def lerp(t, a, b):
     return a + t * (b - a)
 
 
-class PerlinNoiseFactory(object):
+class PerlinNoiseFactory:
     """Callable that produces Perlin noise for an arbitrary point in an
     arbitrary number of dimensions.  The underlying grid is aligned with the
     integers.
