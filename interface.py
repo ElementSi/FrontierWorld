@@ -136,35 +136,17 @@ class Menu:
     Main menu with a selection of basic options
     """
 
-    def __init__(self, surface, size):
+    def __init__(self, surface):
         """
         Constructor of main menu
         :param surface: Pygame Surface object - target surface
         """
         self.surface = surface
-        self.buttons = [
-            Button(
-                surface,
-                (0.1 * size[0], 0.15 * size[1], 0.2 * size[0], 0.05 * size[1]),
-                "Новая игра",
-                0.002 * size[1],
-                feat.COLORS["white"]
-            ),
-            Button(
-                surface,
-                (0.1 * size[0], 0.25 * size[1], 0.2 * size[0], 0.05 * size[1]),
-                "Загрузить игру",
-                0.002 * size[1],
-                feat.COLORS["white"]
-            ),
-            Button(
-                surface,
-                (0.1 * size[0], 0.35 * size[1], 0.2 * size[0], 0.05 * size[1]),
-                "Выход",
-                0.002 * size[1],
-                feat.COLORS["white"]
-            )
-        ]
+        self.size = surface.get_size()
+        self.buttons = []
         self.menu_mod = "main_menu"
-        self.size = size
         self.is_active = True
+
+    def update_menu(self):
+        if self.menu_mod == "main_menu":
+            pass

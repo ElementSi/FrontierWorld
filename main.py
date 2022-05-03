@@ -3,6 +3,7 @@ import pygame as pg
 import features as feat
 import map_objects as obj
 import map as reg_map
+import interface as inter
 
 pg.init()
 
@@ -202,6 +203,7 @@ class Gameplay:
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 game = Gameplay(screen)
+menu = inter.Menu(screen)
 
 while not game.finished:
     game.draw_map()
