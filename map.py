@@ -8,10 +8,10 @@ import typing as tp
 TILE_SIZE = 24
 
 LANDSCAPE = {
-    "soil": [0.9, pg.transform.scale(pg.image.load("textures/soil.png"), (TILE_SIZE, TILE_SIZE))],
-    "sand": [0.5, pg.transform.scale(pg.image.load("textures/sand.png"), (TILE_SIZE, TILE_SIZE))],
-    "rock": [0.7, pg.transform.scale(pg.image.load("textures/rock.png"), (TILE_SIZE, TILE_SIZE))],
-    "rocky_soil": [0.8, pg.transform.scale(pg.image.load("textures/rocky_soil.png"), (TILE_SIZE, TILE_SIZE))]
+    "soil": [0.9, pg.transform.scale(pg.image.load("assets/textures/soil.png"), (TILE_SIZE, TILE_SIZE))],
+    "sand": [0.5, pg.transform.scale(pg.image.load("assets/textures/sand.png"), (TILE_SIZE, TILE_SIZE))],
+    "rock": [0.7, pg.transform.scale(pg.image.load("assets/textures/rock.png"), (TILE_SIZE, TILE_SIZE))],
+    "rocky_soil": [0.8, pg.transform.scale(pg.image.load("assets/textures/rocky_soil.png"), (TILE_SIZE, TILE_SIZE))]
 }
 
 

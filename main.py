@@ -1,12 +1,11 @@
 import pygame as pg
-import random as rnd
+
+import features as feat
 import map_objects as obj
 import map as reg_map
 
-
 pg.init()
 
-FPS = 60
 SCREEN_WIDTH = pg.display.Info().current_w
 SCREEN_HEIGHT = pg.display.Info().current_h
 
@@ -15,13 +14,28 @@ def pixels2tiles(pixel_coords):
     return [int(pixel_coords[0]), int(pixel_coords[1])]
 
 
+class Menu:
+    """
+    Main menu and other pre-game features
+    """
+
+    def __init__(self, surface):
+        """
+        Constructor of menu
+        :param surface: Pygame Surface object - target surface
+        """
+        self.surface = surface
+        self.mod = "main_menu"
+
+
 class Gameplay:
     """
     Gameplay itself
     """
+
     def __init__(self, surface):
         """
-        Initialising of Gameplay
+        Constructor of gameplay
         :param surface: Pygame Surface object - target surface
         """
         self.surface = surface
@@ -76,7 +90,7 @@ class Gameplay:
         Updating display to reflect changes of objects
         """
         pg.display.update()
-        self.clock.tick(FPS)
+        self.clock.tick(feat.FPS)
 
     def process_input(self):
         """
@@ -87,7 +101,7 @@ class Gameplay:
                 self.finished = True
 
             elif event.type == pg.KEYDOWN:
-                if event.key == 27:  # Esk.key = 27
+                if event.key == pg.K_ESCAPE:
                     if self.chosen_map_object is None:
                         self.finished = True
                     else:
@@ -120,7 +134,7 @@ class Gameplay:
                         self.chosen_map_object = None
 
                 else:
-                    if obj.TASKS[self.picked_task] == "object_task":
+                    if feat.TASKS[self.picked_task] == "object_task":
                         target_object = None
 
                         for solid_object in self.list_solid_object:

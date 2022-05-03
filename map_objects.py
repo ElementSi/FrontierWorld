@@ -2,28 +2,16 @@ import pygame as pg
 import random as rnd
 from map import TILE_SIZE
 
-COLORS = {
-    "white": (255, 255, 255)
-}
-
-TASKS = {
-    "chop": "object_task",
-    "harvest_berries": "object_task",
-    "attack": "object_task",
-    "construct": "tile_task",
-    "move_to": "tile_task",
-    "pick_up_loot": "object_task",
-    "dig": "object_task"
-}
+import features as feat
 
 
 def create_draw_box(coord, draw_features, orientation):
     """
     Creating draw box according to draw features of object
     :param coord: list[float, float] - coordinates of object
-    :param draw_features: additional size that extend the image of the object beyond the limits of the tile
+    :param draw_features: dict{string: [float, float, string]} - unique draw features
     :param orientation: string - orientation of object
-    :return:
+    :return: Pygame Rect object - rect into which the texture of the object fits
     """
     return ((coord[0] - draw_features[orientation][0]) * TILE_SIZE,
             (coord[1] - draw_features[orientation][1]) * TILE_SIZE,
@@ -34,11 +22,11 @@ def create_draw_box(coord, draw_features, orientation):
 def create_texture(draw_features, orientation):
     """
     Creating texture according to draw features of object
-    :param draw_features:
-    :param orientation:
-    :return:
+    :param draw_features:additional size that extend the image of the object beyond the limits of the tile
+    :param orientation: string - orientation of object
+    :return: Pygame Surface object - image of map object
     """
-    return pg.transform.scale(pg.image.load("textures/{}".format(draw_features[orientation][2])),
+    return pg.transform.scale(pg.image.load("assets/textures/{}".format(draw_features[orientation][2])),
                               ((1 + 2 * draw_features[orientation][0]) * TILE_SIZE,
                                (1 + draw_features[orientation][1]) * TILE_SIZE))
 
@@ -156,7 +144,7 @@ class SolidObject(MapObject):
                     self.coord[1] * TILE_SIZE,
                     TILE_SIZE,
                     TILE_SIZE)
-        pg.draw.rect(self.surface, COLORS["white"], tile_box, 3)
+        pg.draw.rect(self.surface, feat.COLORS["white"], tile_box, 3)
 
     def safe(self, file):
         """
@@ -788,7 +776,7 @@ class Loot(MapObject):
                     self.coord[1] * TILE_SIZE,
                     TILE_SIZE,
                     TILE_SIZE)
-        pg.draw.rect(self.surface, COLORS["white"], tile_box, 3)
+        pg.draw.rect(self.surface, feat.COLORS["white"], tile_box, 3)
 
 
 class Corpse(Loot):
