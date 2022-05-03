@@ -1,11 +1,11 @@
-from random import random, randint
+from random import random
 
 import PIL
-import pygame as pg
-from PIL import Image, ImageDraw
-from perlin import PerlinNoiseFactory
-import typing as tp
 import numpy as np
+import pygame as pg
+from PIL import Image
+
+from perlin import PerlinNoiseFactory
 
 TILE_SIZE = 24
 
@@ -21,6 +21,7 @@ class Tile:
     """
     Tile that contains information about its surface type and prescribed for spawn objects
     """
+
     def __init__(self, surface, type, pre_object):
         """
         Constructor of tile
@@ -34,10 +35,26 @@ class Tile:
         self.pre_object = pre_object
 
 
-def probability():
-    p = random()
-    if p >= 0.9:
+def probability_tree():
+    t = random()
+    if t >= 0.91:
         return 'tree'
+    else:
+        return None
+
+
+def probability_bush():
+    b = random()
+    if b >= 0.4:
+        return 'bush'
+    else:
+        return None
+
+
+def probability_cliff():
+    r = random()
+    if r >= 0.12:
+        return 'cliff'
     else:
         return None
 
@@ -46,76 +63,41 @@ class Map:
     """
     Map consisting of tiles arranged in a grid
     """
+
     def __init__(self, surface, size):
+
         self.surface = surface
         self.size = size
         self.width = size[0] // TILE_SIZE
         self.height = size[1] // TILE_SIZE
         self.field = []
+        self.perlin_size = 100
+        self.res = 40
+        self.frames = 20
+        self.frameres = 5
+        self.space_range = self.perlin_size // self.res
+        self.frame_range = self.frames // self.frameres
 
-        res = 40
-        frames = 20
-        frameres = 5
-        space_range = size // res
-        frame_range = frames // frameres
+        pnf = PerlinNoiseFactory(3, octaves=4, tile=(self.space_range, self.space_range, self.frame_range))
 
-        pnf = PerlinNoiseFactory(3, octaves=4, tile=(space_range, space_range, frame_range))
+        img = PIL.Image.new('RGB', (self.height, self.width))
+        t = self.frames - 1
+        for i in range(self.height):
+            for j in range(self.width):
+                n = pnf(i / self.res, j / self.res, t / self.frameres)
+                img.putpixel((i, j), int((n + 1) / 2 * 255 + 0.5))
 
-        for t in range(frames):
-            img = PIL.Image.new('L', (size, size))
-            for x in range(size):
-                for y in range(size):
-                    n = pnf(x / res, y / res, t / frameres)
-                    img.putpixel((x, y), int((n + 1) / 2 * 255 + 0.5))
-            pix: tp.Optional[np.array] = img.load()  # All pixels from background
-
-            draw = ImageDraw.Draw(img)
-            for i in range(self.height):
-                for j in range (self.width):
-                     rand_num = randint(0, 255)
-                     draw.point((i, j), (rand_num, rand_num, rand_num))
-            for i in range(self.height):
-                for j in range(self.width):
-                     r = pix[i, j][0]
-                     g = pix[i, j][1]
-                     b = pix[i, j][2]
-
-                     if r > 100 and g > 100 and b > 100:
-                          self.field[i][j] = Tile(surface, 'soil', probability())
-                     elif (45 < r < 101 ) and (45 < r < 101)  and (45 < r < 101):
-                          self.field[i][j] = Tile(surface, 'sand', ' ')
-                     else:
-                          self.field[i][j] = Tile(surface, 'rock', ' ')
-
-
-
-        # for i in range(self.height):
-        #     self.field.append([])
-        #     for j in range(self.width):
-        #         self.field[-1].append(Tile(surface, 'soil', probability()))
-        # im1 = Image.new("RGB", (self.height, self.width))  # create new picture
-        # pix: tp.Optional[np.array] = im1.load()  # All pixels from background
-        # if pix is not None:
-        #     pix = im1.load()
-        #
-        # draw = ImageDraw.Draw(im1)
-        # for i in range(self.height):
-        #     for j in range (self.width):
-        #         rand_num = randint(0, 255)
-        #         draw.point((i, j), (rand_num, rand_num, rand_num))
-        # for i in range(self.height):
-        #     for j in range(self.width):
-        #         r = pix[i, j][0]
-        #         g = pix[i, j][1]
-        #         b = pix[i, j][2]
-        #
-        #         if r > 100 and g > 100 and b > 100:
-        #              self.field[i][j] = Tile(surface, 'soil', probability())
-        #         elif (45 < r < 101 ) and (45 < r < 101)  and (45 < r < 101):
-        #              self.field[i][j] = Tile(surface, 'sand', ' ')
-        #         else:
-        #              self.field[i][j] = Tile(surface, 'rock', ' ')
-
+        for i in range(self.height):
+            self.field.append([])
+            for j in range(self.width):
+                pix = img.getpixel((i, j))
+                r = np.array(pix)[0]
+                if 144 > r > 116:
+                    self.field[-1].append(Tile(surface, 'soil', probability_tree() or probability_bush()))
+                elif 116 > r > 0:
+                    self.field[-1].append(Tile(surface, 'rock', probability_cliff()))
+                else:
+                    self.field[-1].append(Tile(surface, 'sand', None))
 
     def get_pre_object(self, coord):
         """
@@ -148,4 +130,3 @@ class Map:
         Writing information about the map to a save file
         """
         pass  # Надо записать строчку с исчерпывающей и унифицированной информацией о карте в файл
-

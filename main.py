@@ -46,8 +46,12 @@ class Gameplay:
 
         for i in range(self.map.height):
             for j in range(self.map.width):
-                if self.map.field[i][j].pre_object == "tree":
+                if self.map.field[i][j].pre_object == "assets/textures/tree":
                     self.list_solid_object.append(obj.Tree(self.surface, [j, i], 80))
+                elif self.map.field[i][j].pre_object == "assets/textures/bush":
+                    self.list_solid_object.append(obj.Bush(self.surface, [j, i], 25))
+                elif self.map.field[i][j].pre_object == "assets/textures/cliff":
+                    self.list_solid_object.append(obj.Cliff(self.surface, [j, i], 25))
 
         self.list_effects = []
         self.list_loot = []
