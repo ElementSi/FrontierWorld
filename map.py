@@ -45,7 +45,7 @@ def probability_tree():
 
 def probability_bush():
     b = random()
-    if b >= 0.4:
+    if b >= 0.95:
         return 'bush'
     else:
         return None
@@ -53,7 +53,7 @@ def probability_bush():
 
 def probability_cliff():
     r = random()
-    if r >= 0.12:
+    if r >= 0.50:
         return 'cliff'
     else:
         return None
