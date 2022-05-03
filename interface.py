@@ -142,8 +142,29 @@ class Menu:
         :param surface: Pygame Surface object - target surface
         """
         self.surface = surface
-        self.buttons = []
+        self.buttons = [
+            Button(
+                surface,
+                (0.1 * size[0], 0.15 * size[1], 0.2 * size[0], 0.05 * size[1]),
+                "Новая игра",
+                0.002 * size[1],
+                feat.COLORS["white"]
+            ),
+            Button(
+                surface,
+                (0.1 * size[0], 0.25 * size[1], 0.2 * size[0], 0.05 * size[1]),
+                "Загрузить игру",
+                0.002 * size[1],
+                feat.COLORS["white"]
+            ),
+            Button(
+                surface,
+                (0.1 * size[0], 0.35 * size[1], 0.2 * size[0], 0.05 * size[1]),
+                "Выход",
+                0.002 * size[1],
+                feat.COLORS["white"]
+            )
+        ]
         self.menu_mod = "main_menu"
         self.size = size
         self.is_active = True
-
