@@ -30,8 +30,7 @@ class Tile:
         """
         self.surface = surface
         self.type = type
-        self.speed_mod = LANDSCAPE[type][0]
-        self.texture = LANDSCAPE[type][1]
+        self.speed_mod, self.texture = LANDSCAPE[type]
         self.pre_object = pre_object
 
 
@@ -98,22 +97,6 @@ class Map:
                     self.field[-1].append(Tile(surface, 'rock', probability_cliff()))
                 else:
                     self.field[-1].append(Tile(surface, 'sand', None))
-
-    def get_pre_object(self, coord):
-        """
-        Request for the prescribed object to spawn
-        :param coord: list[int, int] - coordinates of the tile of interest
-        :return: string - description of the prescribed object
-        """
-        return self.field[coord[0]][coord[1]].pre_object
-
-    def get_speed_mod(self, coord):
-        """
-        Request for the speed modifier of tile
-        :param coord: list[int, int] - coordinates of the tile of interest
-        :return: float - value of speed modifier
-        """
-        return self.field[coord[0]][coord[1]].speed_mod
 
     def draw(self):
         """

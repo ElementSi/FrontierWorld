@@ -131,7 +131,7 @@ class Button:
         return is_hovered(event, self.draw_box)
 
 
-class MainMenu:
+class Menu:
     """
     Main menu with a selection of basic options
     """
@@ -142,26 +142,8 @@ class MainMenu:
         :param surface: Pygame Surface object - target surface
         """
         self.surface = surface
-        self.buttons = [
-            Button(
-                surface,
-                (0.1 * size, 0.15 * size, 0.2 * size, 0.05 * size),
-                "Новая игра",
-                0.002 * size,
-                feat.COLORS["white"]
-            ),
-            Button(
-                surface,
-                (0.1 * size, 0.25 * size, 0.2 * size, 0.05 * size),
-                "Загрузить игру",
-                0.002 * size,
-                feat.COLORS["white"]
-            ),
-            Button(
-                surface,
-                (0.1 * size, 0.35 * size, 0.2 * size, 0.05 * size),
-                "Выход",
-                0.002 * size,
-                feat.COLORS["white"]
-            )
-        ]
+        self.buttons = []
+        self.menu_mod = "main_menu"
+        self.size = size
+        self.is_active = True
+

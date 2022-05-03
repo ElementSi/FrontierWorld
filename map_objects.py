@@ -69,7 +69,7 @@ class TileTask(Task):
 
     def __init__(self, task_type, target_tile):
         super().__init__(task_type)
-        self.target_object = target_tile
+        self.target_object = target_tile  # FIXME
 
 
 class MapObject:
@@ -225,7 +225,7 @@ class Creature(SolidObject):
         :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
         :return: list[list[int, int],...] - list of tiles to go through
         """
-        pass  # need to solve the problem of finding the shortest path in the maze
+        pass  # TODO need to solve the problem of finding the shortest path in the maze
 
     def define_direction(self, next_coord):
         """

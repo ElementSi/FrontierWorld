@@ -14,20 +14,6 @@ def pixels2tiles(pixel_coords):
     return [int(pixel_coords[0]), int(pixel_coords[1])]
 
 
-class Menu:
-    """
-    Main menu and other pre-game features
-    """
-
-    def __init__(self, surface):
-        """
-        Constructor of menu
-        :param surface: Pygame Surface object - target surface
-        """
-        self.surface = surface
-        self.mod = "main_menu"
-
-
 class Gameplay:
     """
     Gameplay itself
@@ -41,7 +27,7 @@ class Gameplay:
         self.surface = surface
         self.clock = pg.time.Clock()
         self.map = reg_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])
-        self.settler = obj.Settler(self.surface, [40, 20], 20)
+        self.settler = obj.Settler(self.surface, [40, 20])
         self.list_solid_object = []
 
         for i in range(self.map.height):
@@ -96,6 +82,9 @@ class Gameplay:
         pg.display.update()
         self.clock.tick(feat.FPS)
 
+    def _click(self, asdffas):
+        pass  # TODO
+
     def process_input(self):
         """
         Processing all player input
@@ -144,18 +133,18 @@ class Gameplay:
                         for solid_object in self.list_solid_object:
                             if obj.is_picked(event, solid_object.coord):
                                 target_object = solid_object
-                                continue
+                                break
 
                         for loot_item in self.list_loot:
                             if obj.is_picked(event, loot_item.coord):
                                 target_object = loot_item
-                                continue
+                                break
 
                         if target_object is not None:
                             self.settler.task = obj.ObjectTask(self.picked_task, target_object)
 
                         else:
-                            pass  # need to send an error message "no object selected" to the interface
+                            pass  # TODO: need to send an error message "no object selected" to the interface
 
                     else:
                         object_interferes = False
@@ -163,12 +152,12 @@ class Gameplay:
                         for solid_object in self.list_solid_object:
                             if obj.is_picked(event, solid_object.coord):
                                 object_interferes = True
-                                continue
+                                break
 
                         for loot_item in self.list_loot:
                             if obj.is_picked(event, loot_item.coord):
                                 object_interferes = True
-                                continue
+                                break
 
                         if not object_interferes:
                             self.settler.task = obj.TileTask(self.picked_task, pixels2tiles(event.pos))
