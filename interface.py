@@ -3,54 +3,6 @@ import pygame as pg
 import constants as const
 
 
-def is_hovered(event, draw_box):
-    """
-    Checking whether the cursor is hovered over the button
-    :param event: Pygame event object - MOUSEBOTTONDOWN or MOUSEMOTION event from queue
-    :param draw_box: Pygame Rect object - position and size of button
-    """
-    pos = event.pos
-    hor_match = (pos[0] > draw_box[0]) and (pos[0] < draw_box[0] + draw_box[2])
-    vert_match = (pos[1] > draw_box[1]) and (pos[1] < draw_box[1] + draw_box[3])
-    return hor_match and vert_match
-
-
-def tone_change(color, amendment):
-    """
-    Lightening or darkening the tone by a given amendment
-    :param color: tuple(int, int, int) - initial color of button in RGB
-    :param amendment: int - the magnitude of the tone change
-    :return: tuple(int, int, int) - color of button in RGB after changing
-    """
-    if color[0] + amendment < 256:
-        r_color = color[0] + amendment
-    else:
-        r_color = 255
-
-    if color[1] + amendment < 256:
-        g_color = color[1] + amendment
-    else:
-        g_color = 255
-
-    if color[2] + amendment < 256:
-        b_color = color[2] + amendment
-    else:
-        b_color = 255
-
-    return r_color, g_color, b_color
-
-
-def create_text_surface(text, fontsize):
-    """
-    Creating a surface with the specified text
-    :param text: string - text on surface
-    :param fontsize: int - size of font in pixels
-    :return: Pygame Surface object - surface with text
-    """
-    font = pg.font.Font("fonts/Montserrat-Regular.ttf", fontsize)
-    return font.render(text, True, const.COLORS["white"])
-
-
 class Button:
     """
     In-game button displayed on the screen
@@ -69,8 +21,32 @@ class Button:
         self.text = text
         self.key = key
         self.fontsize = fontsize
+        self.font = pg.font.Font("fonts/Montserrat-Regular.ttf", self.fontsize)
         self.original_color = color
         self.color = color
+
+    def tone_change(self, amendment):
+        """
+        Lightening or darkening the tone by a given amendment
+        :param amendment: int - the magnitude of the tone change
+        :return: tuple(int, int, int) - color of button in RGB after changing
+        """
+        if self.color[0] + amendment < 256:
+            r_color = self.color[0] + amendment
+        else:
+            r_color = 255
+
+        if self.color[1] + amendment < 256:
+            g_color = self.color[1] + amendment
+        else:
+            g_color = 255
+
+        if self.color[2] + amendment < 256:
+            b_color = self.color[2] + amendment
+        else:
+            b_color = 255
+
+        return r_color, g_color, b_color
 
     def draw(self):
         """
@@ -80,7 +56,7 @@ class Button:
 
         pg.draw.polygon(
             self.surface,
-            tone_change(self.color, 10),
+            self.tone_change(20),
             ([box[0], box[1]],
              [box[0] + box[2], box[1]],
              [box[0] + box[2], box[1] + box[3]])
@@ -88,7 +64,7 @@ class Button:
 
         pg.draw.polygon(
             self.surface,
-            tone_change(self.color, -10),
+            self.tone_change(-20),
             ([box[0], box[1]],
              [box[0], box[1] + box[3]],
              [box[0] + box[2], box[1] + box[3]])
@@ -108,28 +84,30 @@ class Button:
         )
 
         self.surface.blit(
-            create_text_surface(self.text, self.fontsize),
+            self.font.render(self.text, True, const.COLORS["white"]),
             [box[0] + 0.2 * box[2],
              box[1] + 0.5 * (box[3] - self.fontsize)]
         )
+
+    def is_hovered(self, event):
+        """
+        Checking whether the cursor is hovered over the button
+        :param event: Pygame event object - MOUSEBOTTONDOWN or MOUSEMOTION event from queue
+        """
+        pos = event.pos
+        hor_match = (pos[0] > self.draw_box[0]) and (pos[0] < self.draw_box[0] + self.draw_box[2])
+        vert_match = (pos[1] > self.draw_box[1]) and (pos[1] < self.draw_box[1] + self.draw_box[3])
+        return hor_match and vert_match
 
     def hover(self, event):
         """
         Checking whether the cursor is hovered over the button and changing color
         :param event: Pygame event object - MOUSEMOTION event from queue
         """
-        if is_hovered(event, self.draw_box):
-            self.color = tone_change(self.color, 20)
+        if self.is_hovered(event):
+            self.color = self.tone_change(30)
         else:
             self.color = self.original_color
-
-    def is_pushed(self, event):
-        """
-        Checking whether the button is pressed
-        :param event: Pygame event object - MOUSEBUTTONDOWN event from queue
-        :return: bool - is tile hovered at the moment of the click
-        """
-        return is_hovered(event, self.draw_box)
 
 
 class Menu:
@@ -187,7 +165,7 @@ class Menu:
 
             elif event == pg.MOUSEBUTTONDOWN:
                 for button in self.buttons:
-                    if button.is_pushed(event):
+                    if button.is_hovered(event):
                         if button.key == "main_menu_new_game":
                             self.is_active = False
                         elif button.key == "main_menu_download_game":
@@ -203,7 +181,7 @@ class Menu:
                     (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                     "Новая игра",
                     "main_menu_new_game",
-                    int(0.002 * self.size[1]),
+                    int(0.02 * self.size[1]),
                     const.COLORS["brown"]
                 ),
                 Button(
@@ -211,7 +189,7 @@ class Menu:
                     (0.1 * self.size[0], 0.25 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                     "Загрузить игру",
                     "main_menu_download_game",
-                    int(0.002 * self.size[1]),
+                    int(0.02 * self.size[1]),
                     const.COLORS["brown"]
                 ),
                 Button(
@@ -219,7 +197,7 @@ class Menu:
                     (0.1 * self.size[0], 0.35 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                     "Выход",
                     "main_menu_exit",
-                    int(0.002 * self.size[1]),
+                    int(0.02 * self.size[1]),
                     const.COLORS["brown"]
                 )
             ]
