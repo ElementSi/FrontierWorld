@@ -210,7 +210,6 @@ BackGround = interface.Background('assets\menu_background.png', [0, 0])
 
 while not is_finished:
     if menu.is_active:
-        screen.fill([255, 255, 255])
         screen.blit(BackGround.image, BackGround.rect)
         menu.activate()
         menu.update_state()
@@ -223,5 +222,6 @@ while not is_finished:
         game.process_input()
         game.move_creatures()
         game.update_display()
+        is_finished = game.is_finished
 
 pg.quit()

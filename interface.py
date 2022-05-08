@@ -2,7 +2,6 @@ import pygame as pg
 
 import constants as const
 
-#background = pg.image.load("assets\menu_background.png")
 
 class Background(pg.sprite.Sprite):
     def __init__(self, image_file, location):
@@ -10,6 +9,7 @@ class Background(pg.sprite.Sprite):
         self.image = pg.image.load(image_file)
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = location
+
 
 class Button:
     """
@@ -167,11 +167,12 @@ class Menu:
                 if event.key == pg.K_ESCAPE:
                     self.is_finished = True
 
-            elif event == pg.MOUSEMOTION:
+            elif event.type == pg.MOUSEMOTION:
                 for button in self.buttons:
                     button.hover(event)
 
-            elif event == pg.MOUSEBUTTONDOWN:
+
+            elif event.type == pg.MOUSEBUTTONDOWN:
                 for button in self.buttons:
                     if button.is_hovered(event):
                         if button.key == "main_menu_new_game":
