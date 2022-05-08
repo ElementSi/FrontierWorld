@@ -151,7 +151,7 @@ class Menu:
                 (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                 "Новая игра",
                 "main_menu_new_game",
-                int(0.002 * self.size[1]),
+                int(0.02 * self.size[1]),
                 const.COLORS["brown"]
             ),
             Button(
@@ -177,7 +177,15 @@ class Menu:
 
     def activate(self):
         for event in pg.event.get():
-            if event == pg.MOUSEBUTTONDOWN:
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    self.is_finished = True
+
+            elif event == pg.MOUSEMOTION:
+                for button in self.buttons:
+                    button.hover(event)
+
+            elif event == pg.MOUSEBUTTONDOWN:
                 for button in self.buttons:
                     if button.is_pushed(event):
                         if button.key == "main_menu_new_game":
