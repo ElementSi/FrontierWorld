@@ -3,13 +3,6 @@ import pygame as pg
 import constants as const
 
 
-class Background(pg.sprite.Sprite):
-    def __init__(self, surface, image_file, location):
-        pg.sprite.Sprite.__init__(self)
-        self.image = pg.image.load(image_file)
-        self.rect = pg.Rect(location[0], location[1], surface.get_size()[0], surface.get_size()[1])
-
-
 class Button:
     """
     In-game button displayed on the screen
@@ -130,6 +123,9 @@ class Menu:
         self.surface = surface
         self.clock = pg.time.Clock()
         self.size = surface.get_size()
+        self.background = pg.transform.scale(pg.image.load("assets/menu_background.png"),
+                                             (self.size[0],
+                                              self.size[1]))
         self.buttons = [
             Button(
                 surface,
@@ -157,6 +153,7 @@ class Menu:
             )
         ]
         self.menu_mod = "main_menu"
+        self.is_background_drawn = False
         self.is_active = True  # активировано ли меню отнсительно геймплея
         self.is_finished = False
 
@@ -169,7 +166,6 @@ class Menu:
             elif event.type == pg.MOUSEMOTION:
                 for button in self.buttons:
                     button.hover(event)
-
 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 for button in self.buttons:
@@ -221,6 +217,10 @@ class Menu:
                     const.COLORS["brown"]
                 )
             ]
+
+    def draw_background(self):
+        self.surface.blit(self.background, (0, 0, self.size[0], self.size[1]))
+        self.is_background_drawn = True
 
     def draw(self):
         for button in self.buttons:

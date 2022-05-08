@@ -1,6 +1,5 @@
 import pygame as pg
 import random as rnd
-from game_map import TILE_SIZE
 import cmath
 import heapq
 
@@ -15,10 +14,10 @@ def create_draw_box(coord, draw_features, orientation):
     :param orientation: string - orientation of object
     :return: Pygame Rect object - rect into which the texture of the object fits
     """
-    return ((coord[0] - draw_features[orientation][0]) * TILE_SIZE,
-            (coord[1] - draw_features[orientation][1]) * TILE_SIZE,
-            (1 + 2 * draw_features[orientation][0]) * TILE_SIZE,
-            (1 + draw_features[orientation][1]) * TILE_SIZE)
+    return ((coord[0] - draw_features[orientation][0]) * const.TILE_SIZE,
+            (coord[1] - draw_features[orientation][1]) * const.TILE_SIZE,
+            (1 + 2 * draw_features[orientation][0]) * const.TILE_SIZE,
+            (1 + draw_features[orientation][1]) * const.TILE_SIZE)
 
 
 def create_texture(draw_features, orientation):
@@ -29,8 +28,8 @@ def create_texture(draw_features, orientation):
     :return: Pygame Surface object - image of map object
     """
     return pg.transform.scale(pg.image.load("assets/textures/{}".format(draw_features[orientation][2])),
-                              ((1 + 2 * draw_features[orientation][0]) * TILE_SIZE,
-                               (1 + draw_features[orientation][1]) * TILE_SIZE))
+                              ((1 + 2 * draw_features[orientation][0]) * const.TILE_SIZE,
+                               (1 + draw_features[orientation][1]) * const.TILE_SIZE))
 
 
 def is_picked(event, coord):
@@ -41,8 +40,8 @@ def is_picked(event, coord):
     :return: bool - is object chosen
     """
     pos = event.pos
-    return abs(pos[0] - (coord[0] + 0.5) * TILE_SIZE) < TILE_SIZE / 2 and abs(
-        pos[1] - (coord[1] + 0.5) * TILE_SIZE) < TILE_SIZE / 2
+    return abs(pos[0] - (coord[0] + 0.5) * const.TILE_SIZE) < const.TILE_SIZE / 2 and abs(
+        pos[1] - (coord[1] + 0.5) * const.TILE_SIZE) < const.TILE_SIZE / 2
 
 
 class Task:
@@ -142,10 +141,10 @@ class SolidObject(MapObject):
         """
         Drawing frame around the chosen object
         """
-        tile_box = (self.coord[0] * TILE_SIZE,
-                    self.coord[1] * TILE_SIZE,
-                    TILE_SIZE,
-                    TILE_SIZE)
+        tile_box = (self.coord[0] * const.TILE_SIZE,
+                    self.coord[1] * const.TILE_SIZE,
+                    const.TILE_SIZE,
+                    const.TILE_SIZE)
         pg.draw.rect(self.surface, const.COLORS["white"], tile_box, 3)
 
     def safe(self, file):
@@ -244,35 +243,16 @@ class Creature(SolidObject):
         :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
         :return: grid: list[list[float]] - velocity multiplier matrix
         """
-
         grid = list(list())
-        first_tile = TILE_SIZE / 2
-        last_tile_in_row = self.surface.get_size()[0] - TILE_SIZE / 2
-        last_tile_in_column = self.surface.get_size()[1] - TILE_SIZE / 2
+        width = region_map.width
+        height = region_map.height
 
-        for tile_coord_in_column in range(first_tile, TILE_SIZE, last_tile_in_column):
+        for i in range(0, height):
+            for j in range(0, width):
+                grid[i][j] = 1 / region_map.field[i][j].speed_mod
 
-            for tile_coord_in_row in range(first_tile, TILE_SIZE, last_tile_in_row):
-                row_of_speed_mood = list()
-                checker_object_in_tile = 0
-
-                for i in range(len(list_solid_object)):
-                    if list_solid_object[i].get_coord[0] == tile_coord_in_row and \
-                            list_solid_object[i].get_coord[1] == tile_coord_in_column:
-                        checker_object_in_tile = 1
-
-                if checker_object_in_tile == 1:
-                    if 1 / region_map.field[tile_coord_in_column][tile_coord_in_row].speed_mod > 10 ** 17:
-                        row_of_speed_mood.append(
-                            2 / region_map.field[tile_coord_in_column][tile_coord_in_row].speed_mod)
-                    else:
-                        row_of_speed_mood.append(10 ** 17)
-
-                else:
-                    row_of_speed_mood.append(
-                        1 / region_map.field[tile_coord_in_column][tile_coord_in_row].speed_mod)
-                if tile_coord_in_row == last_tile_in_row:
-                    grid.append(row_of_speed_mood)
+        for solid_object in list_solid_object:
+            grid[int(solid_object[1] + 0.5)][int(solid_object[0] + 0.5)] = 10000
 
         return grid
 
@@ -282,8 +262,7 @@ class Creature(SolidObject):
          velocity coefficient values around the given coordinate.
         :param region_map: Map object - map of the game region
         :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
-        :return: {float: list[float]} - The Key: velocity coefficient values at the given coordinate, value:
-         velocity coefficient values around the given coordinate.
+        :return: {float: list[float]}: The Key - velocity coefficient values around the given tile
         """
         graph = {}
         grid = self.make_grid(region_map, list_solid_object)
@@ -302,8 +281,8 @@ class Creature(SolidObject):
         :return: [float, float] - coordinate around the current in a certain direction
         """
         grid = self.make_grid(region_map, list_solid_object)
-        cols = self.surface.get_size()[0] // TILE_SIZE
-        rows = self.surface.get_size()[1] // TILE_SIZE
+        cols = self.surface.get_size()[0] // const.TILE_SIZE
+        rows = self.surface.get_size()[1] // const.TILE_SIZE
         check_next_node = lambda x_element, y_element: True if 0 <= x_element < cols and \
                                                                0 <= y_element < rows else False
         ways = [-1, 0], [0, -1], [1, 0], [0, 1], [1, 1], [1, -1], [-1, 1], [-1, -1]
@@ -362,13 +341,6 @@ class Creature(SolidObject):
         :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
         :return: list[list[float, float],...] - list of tiles to go through
         """
-        map_objects_around_self = list()
-        for map_object in list_solid_object:
-            if abs(map_object.coord[0] - self.coord[0]) < (TILE_SIZE * cmath.sqrt(2)) and abs(
-                    map_object.coord[0] - self.coord[1]) < (TILE_SIZE * cmath.sqrt(2)):
-                map_objects_around_self = map_objects_around_self.append(map_object)
-        if map_objects_around_self.size() == 8:
-            return list()
         path = self.dijkstra_logic(goal_coord, region_map, list_solid_object)
         return path
 
@@ -443,7 +415,7 @@ class Creature(SolidObject):
         :return: Effect object - some kind of effect accompanying death
                  Corpse object - corpse of dead creature
         """
-        effect_texture = pg.transform.scale(pg.image.load("blood.png"), (TILE_SIZE, TILE_SIZE))
+        effect_texture = pg.transform.scale(pg.image.load("blood.png"), (const.TILE_SIZE, const.TILE_SIZE))
         effect_lifetime = 300
         death_effect = Effect(self.surface, self.coord, effect_texture, effect_lifetime)
         return death_effect
@@ -917,10 +889,10 @@ class Loot(MapObject):
         """
         Drawing frame around the chosen object
         """
-        tile_box = (self.coord[0] * TILE_SIZE,
-                    self.coord[1] * TILE_SIZE,
-                    TILE_SIZE,
-                    TILE_SIZE)
+        tile_box = (self.coord[0] * const.TILE_SIZE,
+                    self.coord[1] * const.TILE_SIZE,
+                    const.TILE_SIZE,
+                    const.TILE_SIZE)
         pg.draw.rect(self.surface, const.COLORS["white"], tile_box, 3)
 
 

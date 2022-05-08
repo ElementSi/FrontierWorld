@@ -6,14 +6,13 @@ import pygame as pg
 from PIL import Image
 
 from perlin import PerlinNoiseFactory
+import constants as const
 
-TILE_SIZE = 24
 
 LANDSCAPE = {
-    "soil": [0.9, pg.transform.scale(pg.image.load("assets/textures/soil.png"), (TILE_SIZE, TILE_SIZE))],
-    "sand": [0.5, pg.transform.scale(pg.image.load("assets/textures/sand.png"), (TILE_SIZE, TILE_SIZE))],
-    "rock": [0.7, pg.transform.scale(pg.image.load("assets/textures/rock.png"), (TILE_SIZE, TILE_SIZE))],
-    "rocky_soil": [0.8, pg.transform.scale(pg.image.load("assets/textures/rocky_soil.png"), (TILE_SIZE, TILE_SIZE))]
+    "soil": [0.9, pg.transform.scale(pg.image.load("assets/textures/soil.png"), (const.TILE_SIZE, const.TILE_SIZE))],
+    "sand": [0.5, pg.transform.scale(pg.image.load("assets/textures/sand.png"), (const.TILE_SIZE, const.TILE_SIZE))],
+    "rock": [0.7, pg.transform.scale(pg.image.load("assets/textures/rock.png"), (const.TILE_SIZE, const.TILE_SIZE))],
 }
 
 
@@ -67,8 +66,8 @@ class Map:
 
         self.surface = surface
         self.size = size
-        self.width = size[0] // TILE_SIZE
-        self.height = size[1] // TILE_SIZE
+        self.width = size[0] // const.TILE_SIZE
+        self.height = size[1] // const.TILE_SIZE
         self.field = []
         self.perlin_size = 100
         self.res = 40
@@ -102,9 +101,9 @@ class Map:
         """
         Drawing the whole map in the current window
         """
-        for i in range(self.size[1] // TILE_SIZE):
-            for j in range(self.size[0] // TILE_SIZE):
-                tile_rect = (j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+        for i in range(self.size[1] // const.TILE_SIZE):
+            for j in range(self.size[0] // const.TILE_SIZE):
+                tile_rect = (j * const.TILE_SIZE, i * const.TILE_SIZE, const.TILE_SIZE, const.TILE_SIZE)
                 landscape_texture = LANDSCAPE[self.field[i][j].type][1]
                 self.surface.blit(landscape_texture, tile_rect)
 
