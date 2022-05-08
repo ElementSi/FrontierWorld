@@ -1,8 +1,8 @@
 import pygame as pg
 import random as rnd
-from map import TILE_SIZE
+from game_map import TILE_SIZE
 
-import features as feat
+import constants as const
 
 
 def create_draw_box(coord, draw_features, orientation):
@@ -144,7 +144,7 @@ class SolidObject(MapObject):
                     self.coord[1] * TILE_SIZE,
                     TILE_SIZE,
                     TILE_SIZE)
-        pg.draw.rect(self.surface, feat.COLORS["white"], tile_box, 3)
+        pg.draw.rect(self.surface, const.COLORS["white"], tile_box, 3)
 
     def safe(self, file):
         """
@@ -776,7 +776,7 @@ class Loot(MapObject):
                     self.coord[1] * TILE_SIZE,
                     TILE_SIZE,
                     TILE_SIZE)
-        pg.draw.rect(self.surface, feat.COLORS["white"], tile_box, 3)
+        pg.draw.rect(self.surface, const.COLORS["white"], tile_box, 3)
 
 
 class Corpse(Loot):

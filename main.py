@@ -1,9 +1,9 @@
 import pygame as pg
 
-import features as feat
-import map_objects as obj
-import map as reg_map
-import interface as inter
+import constants as const
+import map_objects as objects
+import game_map as game_map
+import interface as interface
 
 pg.init()
 
@@ -27,24 +27,24 @@ class Gameplay:
         """
         self.surface = surface
         self.clock = pg.time.Clock()
-        self.map = reg_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])
-        self.settler = obj.Settler(self.surface, [40, 20])
+        self.game_map = game_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])
+        self.settler = objects.Settler(self.surface, [40, 20])
         self.list_solid_object = []
 
-        for i in range(self.map.height):
-            for j in range(self.map.width):
-                if self.map.field[i][j].pre_object == "tree":
-                    self.list_solid_object.append(obj.Tree(self.surface, [j, i]))
-                elif self.map.field[i][j].pre_object == "bush":
-                    self.list_solid_object.append(obj.Bush(self.surface, [j, i]))
-                elif self.map.field[i][j].pre_object == "cliff":
-                    self.list_solid_object.append(obj.Cliff(self.surface, [j, i]))
+        for i in range(self.game_map.height):
+            for j in range(self.game_map.width):
+                if self.game_map.field[i][j].pre_object == "tree":
+                    self.list_solid_object.append(objects.Tree(self.surface, [j, i]))
+                elif self.game_map.field[i][j].pre_object == "bush":
+                    self.list_solid_object.append(objects.Bush(self.surface, [j, i]))
+                elif self.game_map.field[i][j].pre_object == "cliff":
+                    self.list_solid_object.append(objects.Cliff(self.surface, [j, i]))
 
         self.list_effects = []
         self.list_loot = []
         self.chosen_map_object = None
         self.picked_task = None
-        self.finished = False
+        self.is_finished = False
 
     def create_new_animal(self):
         """
@@ -56,7 +56,7 @@ class Gameplay:
         """
         Drawing every map tile
         """
-        self.map.draw()
+        self.game_map.draw()
 
     def draw_objects(self):
         """
@@ -81,7 +81,7 @@ class Gameplay:
         Updating display to reflect changes of objects
         """
         pg.display.update()
-        self.clock.tick(feat.FPS)
+        self.clock.tick(const.FPS)
 
     def _click(self, asdffas):
         pass  # TODO
@@ -92,12 +92,12 @@ class Gameplay:
         """
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                self.finished = True
+                self.is_finished = True
 
             elif event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     if self.chosen_map_object is None:
-                        self.finished = True
+                        self.is_finished = True
                     else:
                         self.chosen_map_object.is_chosen = False
                         self.chosen_map_object = None
@@ -128,21 +128,21 @@ class Gameplay:
                         self.chosen_map_object = None
 
                 else:
-                    if feat.TASKS[self.picked_task] == "object_task":
+                    if const.TASKS[self.picked_task] == "object_task":
                         target_object = None
 
                         for solid_object in self.list_solid_object:
-                            if obj.is_picked(event, solid_object.coord):
+                            if objects.is_picked(event, solid_object.coord):
                                 target_object = solid_object
                                 break
 
                         for loot_item in self.list_loot:
-                            if obj.is_picked(event, loot_item.coord):
+                            if objects.is_picked(event, loot_item.coord):
                                 target_object = loot_item
                                 break
 
                         if target_object is not None:
-                            self.settler.task = obj.ObjectTask(self.picked_task, target_object)
+                            self.settler.task = objects.ObjectTask(self.picked_task, target_object)
 
                         else:
                             pass  # TODO: need to send an error message "no object selected" to the interface
@@ -151,17 +151,17 @@ class Gameplay:
                         object_interferes = False
 
                         for solid_object in self.list_solid_object:
-                            if obj.is_picked(event, solid_object.coord):
+                            if objects.is_picked(event, solid_object.coord):
                                 object_interferes = True
                                 break
 
                         for loot_item in self.list_loot:
-                            if obj.is_picked(event, loot_item.coord):
+                            if objects.is_picked(event, loot_item.coord):
                                 object_interferes = True
                                 break
 
                         if not object_interferes:
-                            self.settler.task = obj.TileTask(self.picked_task, pixels2tiles(event.pos))
+                            self.settler.task = objects.TileTask(self.picked_task, pixels2tiles(event.pos))
 
     def move_creatures(self):
         """
@@ -169,9 +169,9 @@ class Gameplay:
         """
         for solid_object in self.list_solid_object:
             if hasattr(solid_object, 'move'):
-                solid_object.move(self.map)
+                solid_object.move(self.game_map)
 
-        self.settler.move(self.map)
+        self.settler.move(self.game_map)
 
     def ai_acts(self):
         """
@@ -203,13 +203,20 @@ class Gameplay:
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 game = Gameplay(screen)
-menu = inter.Menu(screen)
+menu = interface.Menu(screen)
+is_finished = False
 
-while not game.finished:
-    game.draw_map()
-    game.draw_objects()
-    game.process_input()
-    game.move_creatures()
-    game.display_update()
+while not is_finished:
+    if menu.is_active:
+        menu.activate()
+        menu.update_menu()
+        menu.draw()
+        gamemap =
+    else:
+        game.draw_map()
+        game.draw_objects()
+        game.process_input()
+        game.move_creatures()
+        game.display_update()
 
 pg.quit()

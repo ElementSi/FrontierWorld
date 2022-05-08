@@ -1,6 +1,6 @@
 import pygame as pg
 
-import features as feat
+import constants as const
 
 
 def is_hovered(event, draw_box):
@@ -48,7 +48,7 @@ def create_text_surface(text, fontsize):
     :return: Pygame Surface object - surface with text
     """
     font = pg.font.Font("fonts/Montserrat-Regular.ttf", fontsize)
-    return font.render(text, True, feat.COLORS["white"])
+    return font.render(text, True, const.COLORS["white"])
 
 
 class Button:
@@ -137,45 +137,44 @@ class Menu:
     Main menu with a selection of basic options
     """
 
-    def __init__(self, surface, size):
+    def __init__(self, surface):
         """
         Constructor of main menu
         :param surface: Pygame Surface object - target surface
         """
         self.surface = surface
+        self.size = surface.get_size()
         self.buttons = [
             Button(
                 surface,
-                (0.1 * size[0], 0.15 * size[1], 0.2 * size[0], 0.05 * size[1]),
+                (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                 "Новая игра",
                 "main_menu_new_game",
-                0.002 * size[1],
-                feat.COLORS["white"]
+                0.002 * self.size[1],
+                const.COLORS["white"]
             ),
             Button(
                 surface,
-                (0.1 * size[0], 0.25 * size[1], 0.2 * size[0], 0.05 * size[1]),
+                (0.1 * self.size[0], 0.25 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                 "Загрузить игру",
                 "main_menu_download_game",
-                0.002 * size[1],
-                feat.COLORS["white"]
+                0.002 * self.size[1],
+                const.COLORS["white"]
             ),
             Button(
                 surface,
-                (0.1 * size[0], 0.35 * size[1], 0.2 * size[0], 0.05 * size[1]),
+                (0.1 * self.size[0], 0.35 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                 "Выход",
                 "main_menu_exit",
-                0.002 * size[1],
-                feat.COLORS["white"]
+                0.002 * self.size[1],
+                const.COLORS["white"]
             )
-
         ]
         self.menu_mod = "main_menu"
-        self.size = size
         self.is_active = True  # активировано ли меню отнсительно геймплея
         self.is_finished = False
 
-    def activate(self, event):
+    def activate(self):
         for event in pg.event.get():
             if event == pg.MOUSEBUTTONDOWN:
                 for button in self.buttons:
@@ -196,7 +195,7 @@ class Menu:
                     "Новая игра",
                     "main_menu_new_game",
                     0.002 * self.size[1],
-                    feat.COLORS["white"]
+                    const.COLORS["white"]
                 ),
                 Button(
                     self.surface,
@@ -204,7 +203,7 @@ class Menu:
                     "Загрузить игру",
                     "main_menu_download_game",
                     0.002 * self.size[1],
-                    feat.COLORS["white"]
+                    const.COLORS["white"]
                 ),
                 Button(
                     self.surface,
@@ -212,7 +211,7 @@ class Menu:
                     "Выход",
                     "main_menu_exit",
                     0.002 * self.size[1],
-                    feat.COLORS["white"]
+                    const.COLORS["white"]
                 )
             ]
 
@@ -224,8 +223,9 @@ class Menu:
                     "Назад",
                     "main_menu_back",
                     0.002 * self.size[1],
-                    feat.COLORS["white"]
-                )]
+                    const.COLORS["white"]
+                )
+            ]
 
     def draw(self):
         for button in self.buttons:
