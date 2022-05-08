@@ -1,6 +1,10 @@
 import pygame as pg
 import random as rnd
 from game_map import TILE_SIZE
+import cmath
+import heapq
+from main import SCREEN_WIDTH
+from main import SCREEN_HEIGHT
 
 import constants as const
 
@@ -217,15 +221,158 @@ class Creature(SolidObject):
             self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
             self.texture = create_texture(self.draw_features, "default")
 
+    def time_counter(self, path_to_finish, region_map):
+        """
+        function count time which is necessary to overcome the path
+        :param path_to_finish: list[list[float]]
+        :param region_map: Map object - map of the game region
+        :return: float - time
+        """
+        time = 0.000
+        number_element = 1
+        while number_element != path_to_finish.size():
+            x0 = path_to_finish[number_element - 1][0]
+            y0 = path_to_finish[number_element - 1][1]
+            x1 = path_to_finish[number_element][0]
+            y1 = path_to_finish[number_element][1]
+            facet = cmath.sqrt((x0 - x1) ** 2 + (y0 - y1) ** 2)
+            time += facet / region_map.field[y0][x0].speed_mod
+        return time
+
+    def make_grid(self, region_map, list_solid_object):
+        """
+        function makes cell velocity multiplier matrix
+        :param region_map: Map object - map of the game region
+        :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
+        :return: grid: list[list[float]] - velocity multiplier matrix
+        """
+
+        grid = list(list())
+        first_tile = TILE_SIZE / 2
+        last_tile_in_row = SCREEN_WIDTH - TILE_SIZE / 2
+        last_tile_in_column = SCREEN_HEIGHT - TILE_SIZE / 2
+
+        for tile_coord_in_column in range(first_tile, TILE_SIZE, last_tile_in_column):
+
+            for tile_coord_in_row in range(first_tile, TILE_SIZE, last_tile_in_row):
+                row_of_speed_mood = list()
+                checker_object_in_tile = 0
+
+                for i in range(len(list_solid_object)):
+                    if list_solid_object[i].get_coord[0] == tile_coord_in_row and \
+                            list_solid_object[i].get_coord[1] == tile_coord_in_column:
+                        checker_object_in_tile = 1
+
+                if checker_object_in_tile == 1:
+                    if 1 / region_map.field[tile_coord_in_column][tile_coord_in_row].speed_mod > 10 ** 17:
+                        row_of_speed_mood.append(
+                            2 / region_map.field[tile_coord_in_column][tile_coord_in_row].speed_mod)
+                    else:
+                        row_of_speed_mood.append(10 ** 17)
+
+                else:
+                    row_of_speed_mood.append(
+                        1 / region_map.field[tile_coord_in_column][tile_coord_in_row].speed_mod)
+                if tile_coord_in_row == last_tile_in_row:
+                    grid.append(row_of_speed_mood)
+
+        return grid
+
+    def make_graph(self, region_map, list_solid_object):
+        """
+        Function makes a dict. The Key: velocity coefficient values at the given coordinate, value:
+         velocity coefficient values around the given coordinate.
+        :param region_map: Map object - map of the game region
+        :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
+        :return: {float: list[float]} - The Key: velocity coefficient values at the given coordinate, value:
+         velocity coefficient values around the given coordinate.
+        """
+        graph = {}
+        grid = self.make_grid(region_map, list_solid_object)
+        for y, row in enumerate(grid):
+            for x, col in enumerate(row):
+                graph[(x, y)] = graph.get((x, y), []) + self.get_next_nodes(x, y, region_map, list_solid_object)
+        return graph
+
+    def get_next_nodes(self, x, y, region_map, list_solid_object):
+        """
+        function finds cell coordinates around the current in a certain direction
+        :param x: float - x location coordinate
+        :param y: float - y location coordinate
+        :param region_map: Map object - map of the game region
+        :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
+        :return: [float, float] - coordinate around the current in a certain direction
+        """
+        grid = self.make_grid(region_map, list_solid_object)
+        cols = SCREEN_HEIGHT / TILE_SIZE
+        rows = SCREEN_HEIGHT / TILE_SIZE
+        check_next_node = lambda x_element, y_element: True if 0 <= x_element < cols and \
+                                                               0 <= y_element < rows else False
+        ways = [-1, 0], [0, -1], [1, 0], [0, 1], [1, 1], [1, -1], [-1, 1], [-1, -1]
+        return [(grid[y + dy][x + dx], (x + dx, y + dy)) for dx, dy in ways if check_next_node(x + dx, y + dy)]
+
+    def dijkstra_logic(self, goal_coord, region_map, list_solid_object):
+        """
+        :param self: Creature for whom we are looking for a way
+        :param goal_coord: [float, float] - finish coordinate
+        :param region_map: Map object - map of the game region
+        :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
+        :return: list[list[float, float],...] - list of tiles to go through
+        """
+        graph = self.make_graph(region_map, list_solid_object)
+        start = (self.coord[0], self.coord[1])
+        goal = (goal_coord[0], goal_coord[1])
+        queue_coords = []
+        heapq.heappush(queue_coords, (0, start))
+        cost_visited = {start: 0}
+        visited = {start: None}
+
+        while queue_coords:
+            cur_cost, cur_node = heapq.heappop(queue_coords)
+            if cur_node == goal:
+                break
+
+            next_nodes = graph[cur_node]
+            for next_node in next_nodes:
+                neigh_cost, neigh_node = next_node
+                new_cost = cost_visited[cur_node] + neigh_cost
+
+                if neigh_node not in cost_visited or new_cost < cost_visited[neigh_node]:
+                    heapq.heappush(queue_coords, (new_cost, neigh_node))
+                    cost_visited[neigh_node] = new_cost
+                    visited[neigh_node] = cur_node
+
+        cur_node = goal
+        path = list()
+        coordinates = list()
+        coordinates.append(goal[0])
+        coordinates.append(goal[1])
+        path.append(coordinates)
+        while cur_node != start:
+            cur_node = visited[cur_node]
+            coordinates = [cur_node[0], cur_node[1]]
+            path.append(coordinates)
+
+        path.reverse()
+        return path
+
     def pathfinder(self, goal_coord, region_map, list_solid_object):
         """
         Finding the best way to the goal on the map
-        :param goal_coord: list[int, int] -
+        :param goal_coord: list[int, int] - coordinates' of target cell
         :param region_map: Map object - map of the game region
         :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
-        :return: list[list[int, int],...] - list of tiles to go through
+        :return: list[list[float, float],...] - list of tiles to go through
         """
-        pass  # TODO need to solve the problem of finding the shortest path in the maze
+        map_objects_around_self = list()
+        for map_object in list_solid_object:
+            if abs(map_object.coord[0] - self.coord[0]) < (TILE_SIZE * cmath.sqrt(2)) and abs(
+                    map_object.coord[0] - self.coord[1]) < (TILE_SIZE * cmath.sqrt(2)):
+                map_objects_around_self = map_objects_around_self.append(map_object)
+        if map_objects_around_self.size() == 8:
+            return list()
+        path = self.dijkstra_logic(goal_coord, region_map, list_solid_object)
+        return path
 
     def define_direction(self, next_coord):
         """
