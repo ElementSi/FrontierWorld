@@ -143,6 +143,7 @@ class Menu:
         :param surface: Pygame Surface object - target surface
         """
         self.surface = surface
+        self.clock = pg.time.Clock()
         self.size = surface.get_size()
         self.buttons = [
             Button(
@@ -186,7 +187,7 @@ class Menu:
                         elif button.key == "main_menu_exit":
                             self.is_finished = True
 
-    def update_menu(self):
+    def update_state(self):
         if self.menu_mod == "main_menu":
             self.buttons = [
                 Button(
@@ -230,3 +231,10 @@ class Menu:
     def draw(self):
         for button in self.buttons:
             button.draw()
+
+    def update_menu(self):
+        """
+        Updating display to reflect changes of objects
+        """
+        pg.display.update()
+        self.clock.tick(const.FPS)

@@ -76,7 +76,7 @@ class Gameplay:
         if self.chosen_map_object is not None:
             self.chosen_map_object.draw_frame()
 
-    def display_update(self):
+    def update_display(self):
         """
         Updating display to reflect changes of objects
         """
@@ -209,13 +209,14 @@ is_finished = False
 while not is_finished:
     if menu.is_active:
         menu.activate()
-        menu.update_menu()
+        menu.update_state()
         menu.draw()
+        menu.update_menu()
     else:
         game.draw_map()
         game.draw_objects()
         game.process_input()
         game.move_creatures()
-        game.display_update()
+        game.update_display()
 
 pg.quit()
