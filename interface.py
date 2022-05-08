@@ -168,6 +168,7 @@ class Menu:
                 0.002 * size[1],
                 feat.COLORS["white"]
             )
+
         ]
         self.menu_mod = "main_menu"
         self.size = size
@@ -188,7 +189,43 @@ class Menu:
 
     def update_menu(self):
         if self.menu_mod == "main_menu":
-            pass
+            self.buttons = [
+                Button(
+                    self.surface,
+                    (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
+                    "Новая игра",
+                    "main_menu_new_game",
+                    0.002 * self.size[1],
+                    feat.COLORS["white"]
+                ),
+                Button(
+                    self.surface,
+                    (0.1 * self.size[0], 0.25 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
+                    "Загрузить игру",
+                    "main_menu_download_game",
+                    0.002 * self.size[1],
+                    feat.COLORS["white"]
+                ),
+                Button(
+                    self.surface,
+                    (0.1 * self.size[0], 0.35 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
+                    "Выход",
+                    "main_menu_exit",
+                    0.002 * self.size[1],
+                    feat.COLORS["white"]
+                )
+            ]
+
+        elif self.menu_mod == "download_menu":
+            self.buttons = [
+                Button(
+                    self.surface,
+                    (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
+                    "Назад",
+                    "main_menu_back",
+                    0.002 * self.size[1],
+                    feat.COLORS["white"]
+                )]
 
     def draw(self):
         for button in self.buttons:
