@@ -3,8 +3,6 @@ import random as rnd
 from game_map import TILE_SIZE
 import cmath
 import heapq
-from main import SCREEN_WIDTH
-from main import SCREEN_HEIGHT
 
 import constants as const
 
@@ -228,7 +226,7 @@ class Creature(SolidObject):
         :param region_map: Map object - map of the game region
         :return: float - time
         """
-        time = 0.000
+        time = 0.0
         number_element = 1
         while number_element != path_to_finish.size():
             x0 = path_to_finish[number_element - 1][0]
@@ -249,8 +247,8 @@ class Creature(SolidObject):
 
         grid = list(list())
         first_tile = TILE_SIZE / 2
-        last_tile_in_row = SCREEN_WIDTH - TILE_SIZE / 2
-        last_tile_in_column = SCREEN_HEIGHT - TILE_SIZE / 2
+        last_tile_in_row = self.surface.get_size()[0] - TILE_SIZE / 2
+        last_tile_in_column = self.surface.get_size()[1] - TILE_SIZE / 2
 
         for tile_coord_in_column in range(first_tile, TILE_SIZE, last_tile_in_column):
 
@@ -304,8 +302,8 @@ class Creature(SolidObject):
         :return: [float, float] - coordinate around the current in a certain direction
         """
         grid = self.make_grid(region_map, list_solid_object)
-        cols = SCREEN_HEIGHT / TILE_SIZE
-        rows = SCREEN_HEIGHT / TILE_SIZE
+        cols = self.surface.get_size()[0] // TILE_SIZE
+        rows = self.surface.get_size()[1] // TILE_SIZE
         check_next_node = lambda x_element, y_element: True if 0 <= x_element < cols and \
                                                                0 <= y_element < rows else False
         ways = [-1, 0], [0, -1], [1, 0], [0, 1], [1, 1], [1, -1], [-1, 1], [-1, -1]
