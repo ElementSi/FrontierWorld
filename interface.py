@@ -4,11 +4,10 @@ import constants as const
 
 
 class Background(pg.sprite.Sprite):
-    def __init__(self, image_file, location):
+    def __init__(self, surface, image_file, location):
         pg.sprite.Sprite.__init__(self)
         self.image = pg.image.load(image_file)
-        self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = location
+        self.rect = pg.Rect(location[0], location[1], surface.get_size()[0], surface.get_size()[1])
 
 
 class Button:
@@ -219,7 +218,7 @@ class Menu:
                     "Назад",
                     "main_menu_back",
                     int(0.002 * self.size[1]),
-                    const.COLORS["white"]
+                    const.COLORS["brown"]
                 )
             ]
 
