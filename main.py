@@ -211,7 +211,6 @@ while not is_finished:
         menu.activate()
         menu.update_menu()
         menu.draw()
-        gamemap =
     else:
         game.draw_map()
         game.draw_objects()

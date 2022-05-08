@@ -150,7 +150,7 @@ class Menu:
                 (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                 "Новая игра",
                 "main_menu_new_game",
-                0.002 * self.size[1],
+                int(0.002 * self.size[1]),
                 const.COLORS["white"]
             ),
             Button(
@@ -158,7 +158,7 @@ class Menu:
                 (0.1 * self.size[0], 0.25 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                 "Загрузить игру",
                 "main_menu_download_game",
-                0.002 * self.size[1],
+                int(0.002 * self.size[1]),
                 const.COLORS["white"]
             ),
             Button(
@@ -166,7 +166,7 @@ class Menu:
                 (0.1 * self.size[0], 0.35 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                 "Выход",
                 "main_menu_exit",
-                0.002 * self.size[1],
+                int(0.002 * self.size[1]),
                 const.COLORS["white"]
             )
         ]
@@ -194,7 +194,7 @@ class Menu:
                     (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                     "Новая игра",
                     "main_menu_new_game",
-                    0.002 * self.size[1],
+                    int(0.002 * self.size[1]),
                     const.COLORS["white"]
                 ),
                 Button(
@@ -202,7 +202,7 @@ class Menu:
                     (0.1 * self.size[0], 0.25 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                     "Загрузить игру",
                     "main_menu_download_game",
-                    0.002 * self.size[1],
+                    int(0.002 * self.size[1]),
                     const.COLORS["white"]
                 ),
                 Button(
@@ -210,7 +210,7 @@ class Menu:
                     (0.1 * self.size[0], 0.35 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                     "Выход",
                     "main_menu_exit",
-                    0.002 * self.size[1],
+                    int(0.002 * self.size[1]),
                     const.COLORS["white"]
                 )
             ]
@@ -222,7 +222,7 @@ class Menu:
                     (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                     "Назад",
                     "main_menu_back",
-                    0.002 * self.size[1],
+                    int(0.002 * self.size[1]),
                     const.COLORS["white"]
                 )
             ]
