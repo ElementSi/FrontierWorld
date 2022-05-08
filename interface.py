@@ -56,7 +56,7 @@ class Button:
     In-game button displayed on the screen
     """
 
-    def __init__(self, surface, draw_box, text, fontsize, color):
+    def __init__(self, surface, pos, draw_box, text, fontsize, color):
         """
         Constructor of button
         :param surface: Pygame Surface object - target window
@@ -66,10 +66,13 @@ class Button:
         """
         self.surface = surface
         self.draw_box = draw_box
+        self.x_pos = pos[0]
+        self.y_pos = pos[1]
         self.text = text
         self.fontsize = fontsize
         self.original_color = color
         self.color = color
+        self.rect = self.surface.get_rect(center=(self.x_pos, self.y_pos))
 
     def draw(self):
         """
@@ -128,7 +131,10 @@ class Button:
         :param event: Pygame event object - MOUSEBUTTONDOWN event from queue
         :return: bool - is tile hovered at the moment of the click
         """
-        return is_hovered(event, self.draw_box)
+        if event[0] in range(self.rect.left, self.rect.right) and event[1] in range(self.rect.top,
+                                                                                          self.rect.bottom):
+            return True
+        return False
 
 
 class Menu:
@@ -136,16 +142,51 @@ class Menu:
     Main menu with a selection of basic options
     """
 
-    def __init__(self, surface):
+    def __init__(self, surface, size):
         """
         Constructor of main menu
         :param surface: Pygame Surface object - target surface
         """
         self.surface = surface
-        self.size = surface.get_size()
-        self.buttons = []
+        self.buttons = [
+            Button(
+                surface,
+                (0.1 * size[0], 0.15 * size[1], 0.2 * size[0], 0.05 * size[1]),
+                "Новая игра",
+                0.002 * size[1],
+                feat.COLORS["white"]
+            ),
+            Button(
+                surface,
+                (0.1 * size[0], 0.25 * size[1], 0.2 * size[0], 0.05 * size[1]),
+                "Загрузить игру",
+                0.002 * size[1],
+                feat.COLORS["white"]
+            ),
+            Button(
+                surface,
+                (0.1 * size[0], 0.35 * size[1], 0.2 * size[0], 0.05 * size[1]),
+                "Выход",
+                0.002 * size[1],
+                feat.COLORS["white"]
+            )
+        ]
         self.menu_mod = "main_menu"
-        self.is_active = True
+        self.size = size
+        self.is_active = True # активировано ли меню отнсительно геймплея
+        self.is_finished = False
+
+    def active(self, event):
+        for event in pg.event.get():
+            if event == pg.MOUSEBUTTONDOWN:
+                for button in self.buttons:
+                    if button.is_pushed(event):
+                        if button.text == "Новая игра":
+                            self.is_active = False
+                        elif button.text == "Загрузить игру":
+                            pass
+                        elif button.text == "Выход":
+                            self.is_finished = True
 
     def update_menu(self):
         if self.menu_mod == "main_menu":

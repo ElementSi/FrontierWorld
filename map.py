@@ -73,9 +73,9 @@ class Map:
         self.perlin_size = 100
         self.res = 40
         self.frames = 20
-        self.frameres = 5
+        self.framer = 5
         self.space_range = self.perlin_size // self.res
-        self.frame_range = self.frames // self.frameres
+        self.frame_range = self.frames // self.framer
 
         pnf = PerlinNoiseFactory(3, octaves=4, tile=(self.space_range, self.space_range, self.frame_range))
 
@@ -83,7 +83,7 @@ class Map:
         t = self.frames - 1
         for i in range(self.height):
             for j in range(self.width):
-                n = pnf(i / self.res, j / self.res, t / self.frameres)
+                n = pnf(i / self.res, j / self.res, t / self.framer)
                 img.putpixel((i, j), int((n + 1) / 2 * 255 + 0.5))
 
         for i in range(self.height):
