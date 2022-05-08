@@ -97,8 +97,8 @@ class Button:
         smaller_box = (
             box[0] + 0.1 * box[2],
             box[1] + 0.1 * box[3],
-            box[0] + 0.9 * box[2],
-            box[1] + 0.9 * box[3]
+            0.8 * box[2],
+            0.8 * box[3]
         )
 
         pg.draw.rect(
@@ -152,7 +152,7 @@ class Menu:
                 "Новая игра",
                 "main_menu_new_game",
                 int(0.002 * self.size[1]),
-                const.COLORS["white"]
+                const.COLORS["brown"]
             ),
             Button(
                 surface,
@@ -160,7 +160,7 @@ class Menu:
                 "Загрузить игру",
                 "main_menu_download_game",
                 int(0.002 * self.size[1]),
-                const.COLORS["white"]
+                const.COLORS["brown"]
             ),
             Button(
                 surface,
@@ -168,7 +168,7 @@ class Menu:
                 "Выход",
                 "main_menu_exit",
                 int(0.002 * self.size[1]),
-                const.COLORS["white"]
+                const.COLORS["brown"]
             )
         ]
         self.menu_mod = "main_menu"
@@ -196,7 +196,7 @@ class Menu:
                     "Новая игра",
                     "main_menu_new_game",
                     int(0.002 * self.size[1]),
-                    const.COLORS["white"]
+                    const.COLORS["brown"]
                 ),
                 Button(
                     self.surface,
@@ -204,7 +204,7 @@ class Menu:
                     "Загрузить игру",
                     "main_menu_download_game",
                     int(0.002 * self.size[1]),
-                    const.COLORS["white"]
+                    const.COLORS["brown"]
                 ),
                 Button(
                     self.surface,
@@ -212,7 +212,7 @@ class Menu:
                     "Выход",
                     "main_menu_exit",
                     int(0.002 * self.size[1]),
-                    const.COLORS["white"]
+                    const.COLORS["brown"]
                 )
             ]
 
