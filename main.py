@@ -202,12 +202,16 @@ class Gameplay:
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
+
 game = Gameplay(screen)
 menu = interface.Menu(screen)
 is_finished = False
+BackGround = interface.Background('assets\menu_background.png', [0, 0])
 
 while not is_finished:
     if menu.is_active:
+        screen.fill([255, 255, 255])
+        screen.blit(BackGround.image, BackGround.rect)
         menu.activate()
         menu.update_state()
         menu.draw()
