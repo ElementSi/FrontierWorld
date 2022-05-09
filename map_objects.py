@@ -679,7 +679,7 @@ class Tree(Plant):
         """
         super().__init__(surface, coord, hit_points)
         self.draw_features = {
-            "default": [0.5, 1.5, "tree.png"]
+            "default": [0.75, 1.5, "tree.png"]
         }
         self.draw_box = create_draw_box(self.coord, self.draw_features, "default")
         self.texture = create_texture(self.draw_features, "default")

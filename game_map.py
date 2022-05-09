@@ -1,11 +1,9 @@
-from random import random
-
-import PIL
+import random as rnd
 import numpy as np
 import pygame as pg
 from PIL import Image
 
-from perlin import PerlinNoiseFactory
+import perlin as perlin
 import constants as const
 
 
@@ -34,24 +32,28 @@ class Tile:
 
 
 def probability_tree():
-    t = random()
-    if t >= 0.91:
+    if rnd.random() >= 0.91:
         return 'tree'
     else:
         return None
 
 
 def probability_bush():
-    b = random()
-    if b >= 0.95:
+    if rnd.random() >= 0.95:
         return 'bush'
     else:
         return None
 
 
-def probability_cliff():
-    r = random()
-    if r >= 0.50:
+def probability_cliff(field, coord, surface, rad):
+    is_rock_nearby = True
+
+    for i in range(max(coord[1] - rad, 0), min(surface.get_size()[1] // const.TILE_SIZE, coord[1] + rad + 1)):
+        for j in range(max(coord[0] - rad, 0), min(surface.get_size()[0] // const.TILE_SIZE, coord[0] + rad + 1)):
+            if field[i][j].type != "rock":
+                is_rock_nearby = False
+
+    if is_rock_nearby:
         return 'cliff'
     else:
         return None
@@ -76,9 +78,9 @@ class Map:
         self.space_range = self.perlin_size // self.res
         self.frame_range = self.frames // self.framer
 
-        pnf = PerlinNoiseFactory(3, octaves=4, tile=(self.space_range, self.space_range, self.frame_range))
+        pnf = perlin.PerlinNoiseFactory(3, octaves=4, tile=(self.space_range, self.space_range, self.frame_range))
 
-        img = PIL.Image.new('RGB', (self.height, self.width))
+        img = Image.new('RGB', (self.height, self.width))
         t = self.frames - 1
         for i in range(self.height):
             for j in range(self.width):
@@ -93,9 +95,14 @@ class Map:
                 if 144 > r > 116:
                     self.field[-1].append(Tile(surface, 'soil', probability_tree() or probability_bush()))
                 elif 116 > r > 0:
-                    self.field[-1].append(Tile(surface, 'rock', probability_cliff()))
+                    self.field[-1].append(Tile(surface, 'rock', None))
                 else:
                     self.field[-1].append(Tile(surface, 'sand', None))
+
+        for i in range(self.height):
+            for j in range(self.width):
+                if self.field[i][j].type == "rock":
+                    self.field[i][j].pre_object = probability_cliff(self.field, (j, i), self.surface, 2)
 
     def draw(self):
         """

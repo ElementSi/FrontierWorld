@@ -24,6 +24,7 @@ class Button:
         self.font = pg.font.Font("fonts/Montserrat-Regular.ttf", self.fontsize)
         self.original_color = color
         self.color = color
+        self.is_selected = False
 
     def tone_change(self, amendment):
         """
@@ -31,18 +32,18 @@ class Button:
         :param amendment: int - the magnitude of the tone change
         :return: tuple(int, int, int) - color of button in RGB after changing
         """
-        if self.color[0] + amendment < 256:
-            r_color = self.color[0] + amendment
+        if self.original_color[0] + amendment < 256:
+            r_color = self.original_color[0] + amendment
         else:
             r_color = 255
 
-        if self.color[1] + amendment < 256:
-            g_color = self.color[1] + amendment
+        if self.original_color[1] + amendment < 256:
+            g_color = self.original_color[1] + amendment
         else:
             g_color = 255
 
-        if self.color[2] + amendment < 256:
-            b_color = self.color[2] + amendment
+        if self.original_color[2] + amendment < 256:
+            b_color = self.original_color[2] + amendment
         else:
             b_color = 255
 
@@ -56,7 +57,7 @@ class Button:
 
         pg.draw.polygon(
             self.surface,
-            self.tone_change(20),
+            self.tone_change(30),
             ([box[0], box[1]],
              [box[0] + box[2], box[1]],
              [box[0] + box[2], box[1] + box[3]])
@@ -64,7 +65,7 @@ class Button:
 
         pg.draw.polygon(
             self.surface,
-            self.tone_change(-20),
+            self.tone_change(-30),
             ([box[0], box[1]],
              [box[0], box[1] + box[3]],
              [box[0] + box[2], box[1] + box[3]])
@@ -104,8 +105,9 @@ class Button:
         Checking whether the cursor is hovered over the button and changing color
         :param event: Pygame event object - MOUSEMOTION event from queue
         """
-        if self.is_hovered(event):
-            self.color = self.tone_change(30)
+        self.is_selected = self.is_hovered(event)
+        if self.is_selected:
+            self.color = self.tone_change(20)
         else:
             self.color = self.original_color
 
@@ -140,7 +142,7 @@ class Menu:
                 (0.1 * self.size[0], 0.25 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                 "Загрузить игру",
                 "main_menu_download_game",
-                int(0.002 * self.size[1]),
+                int(0.02 * self.size[1]),
                 const.COLORS["brown"]
             ),
             Button(
@@ -148,13 +150,14 @@ class Menu:
                 (0.1 * self.size[0], 0.35 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
                 "Выход",
                 "main_menu_exit",
-                int(0.002 * self.size[1]),
+                int(0.02 * self.size[1]),
                 const.COLORS["brown"]
             )
         ]
         self.menu_mod = "main_menu"
         self.is_background_drawn = False
-        self.is_active = True  # активировано ли меню отнсительно геймплея
+        self.is_in_need_of_update = False
+        self.is_active = True
         self.is_finished = False
 
     def activate(self):
@@ -172,55 +175,66 @@ class Menu:
                     if button.is_hovered(event):
                         if button.key == "main_menu_new_game":
                             self.is_active = False
+                            return "new_game"
                         elif button.key == "main_menu_download_game":
                             self.menu_mod = "download_menu"
+                            self.is_in_need_of_update = True
                         elif button.key == "main_menu_exit":
                             self.is_finished = True
+                        elif button.key == "download_menu_back":
+                            self.menu_mod = "main_menu"
+                            self.is_in_need_of_update = True
 
     def update_state(self):
-        if self.menu_mod == "main_menu":
-            self.buttons = [
-                Button(
-                    self.surface,
-                    (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
-                    "Новая игра",
-                    "main_menu_new_game",
-                    int(0.02 * self.size[1]),
-                    const.COLORS["brown"]
-                ),
-                Button(
-                    self.surface,
-                    (0.1 * self.size[0], 0.25 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
-                    "Загрузить игру",
-                    "main_menu_download_game",
-                    int(0.02 * self.size[1]),
-                    const.COLORS["brown"]
-                ),
-                Button(
-                    self.surface,
-                    (0.1 * self.size[0], 0.35 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
-                    "Выход",
-                    "main_menu_exit",
-                    int(0.02 * self.size[1]),
-                    const.COLORS["brown"]
-                )
-            ]
+        if self.is_in_need_of_update:
+            if self.menu_mod == "main_menu":
+                self.buttons.clear()
+                self.buttons = [
+                    Button(
+                        self.surface,
+                        (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
+                        "Новая игра",
+                        "main_menu_new_game",
+                        int(0.02 * self.size[1]),
+                        const.COLORS["brown"]
+                    ),
+                    Button(
+                        self.surface,
+                        (0.1 * self.size[0], 0.25 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
+                        "Загрузить игру",
+                        "main_menu_download_game",
+                        int(0.02 * self.size[1]),
+                        const.COLORS["brown"]
+                    ),
+                    Button(
+                        self.surface,
+                        (0.1 * self.size[0], 0.35 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
+                        "Выход",
+                        "main_menu_exit",
+                        int(0.02 * self.size[1]),
+                        const.COLORS["brown"]
+                    )
+                ]
+                self.is_in_need_of_update = False
 
-        elif self.menu_mod == "download_menu":
-            self.buttons = [
-                Button(
-                    self.surface,
-                    (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
-                    "Назад",
-                    "main_menu_back",
-                    int(0.002 * self.size[1]),
-                    const.COLORS["brown"]
-                )
-            ]
+            elif self.menu_mod == "download_menu":
+                self.buttons.clear()
+                self.buttons = [
+                    Button(
+                        self.surface,
+                        (0.1 * self.size[0], 0.15 * self.size[1], 0.2 * self.size[0], 0.05 * self.size[1]),
+                        "Назад",
+                        "download_menu_back",
+                        int(0.02 * self.size[1]),
+                        const.COLORS["brown"]
+                    )
+                ]
+                self.is_in_need_of_update = False
 
     def draw_background(self):
-        self.surface.blit(self.background, (0, 0, self.size[0], self.size[1]))
-        self.is_background_drawn = True
+        if (not self.is_background_drawn) or (not self.is_in_need_of_update):
+            self.surface.blit(self.background, (0, 0, self.size[0], self.size[1]))
+            self.is_background_drawn = True
 
     def draw(self):
         for button in self.buttons:

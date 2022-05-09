@@ -203,20 +203,26 @@ class Gameplay:
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
-game = Gameplay(screen)
 menu = interface.Menu(screen)
 is_finished = False
+game_preset = "new_game"
+is_game_ready = False
 
 while not is_finished:
     if menu.is_active:
-        menu.activate()
+        game_preset = menu.activate()
         menu.update_state()
-        if not menu.is_background_drawn:
-            menu.draw_background()
+        menu.draw_background()
         menu.draw()
         menu.update_menu()
         is_finished = menu.is_finished
     else:
+        if (game_preset == "new_game") and (not is_game_ready):
+            game = Gameplay(screen)
+            is_game_ready = True
+        elif not is_game_ready:
+            game = Gameplay(screen)
+            is_game_ready = True
         game.draw_map()
         game.draw_objects()
         game.process_input()
