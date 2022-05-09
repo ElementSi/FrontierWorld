@@ -15,3 +15,4 @@ TASKS = {
 
 FPS = 60
 TILE_SIZE = 24
+FONT = "fonts/Montserrat-Medium.ttf"

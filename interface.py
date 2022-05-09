@@ -21,7 +21,7 @@ class Button:
         self.text = text
         self.key = key
         self.fontsize = fontsize
-        self.font = pg.font.Font("fonts/Montserrat-Regular.ttf", self.fontsize)
+        self.font = pg.font.Font(const.FONT, self.fontsize)
         self.original_color = color
         self.color = color
         self.is_selected = False
@@ -86,8 +86,8 @@ class Button:
 
         self.surface.blit(
             self.font.render(self.text, True, const.COLORS["white"]),
-            [box[0] + 0.2 * box[2],
-             box[1] + 0.5 * (box[3] - self.fontsize)]
+            [box[0] + 0.15 * box[2],
+             box[1] + 0.4 * (box[3] - self.fontsize)]
         )
 
     def is_hovered(self, event):
