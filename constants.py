@@ -1,6 +1,9 @@
 COLORS = {
     "white": (255, 255, 255),
-    "brown": (191, 133, 57)
+    "cream": (191, 133, 57),
+    "brown": (77, 53, 48),
+    "light_blue": (80, 82, 148),
+    "dark_blue": (13, 14, 41)
 }
 
 TASKS = {
@@ -16,3 +19,4 @@ TASKS = {
 FPS = 60
 TILE_SIZE = 24
 FONT = "fonts/Montserrat-Medium.ttf"
+INTERFACE_AMENDMENT = 3

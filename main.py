@@ -27,6 +27,7 @@ class Gameplay:
         """
         self.surface = surface
         self.clock = pg.time.Clock()
+        self.interface = interface.InGameInterface(surface)
         self.game_map = game_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])
         self.settler = objects.Settler(self.surface, [40, 20])
         self.list_solid_object = []
@@ -51,6 +52,12 @@ class Gameplay:
         Randomly spawn new animal on the border of the map
         """
         pass
+
+    def draw_interface(self):
+        """
+        Drawing in-game interface
+        """
+        self.interface.draw()
 
     def draw_map(self):
         """
@@ -101,6 +108,9 @@ class Gameplay:
                     else:
                         self.chosen_map_object.is_chosen = False
                         self.chosen_map_object = None
+
+            elif event.type == pg.MOUSEMOTION:
+                self.interface.activate(event)
 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 # First, clicking on the interface buttons is checked
@@ -204,6 +214,7 @@ screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 menu = interface.Menu(screen)
+game = Gameplay(screen)
 is_finished = False
 game_preset = "new_game"
 is_game_ready = False
@@ -223,6 +234,7 @@ while not is_finished:
         elif not is_game_ready:
             game = Gameplay(screen)
             is_game_ready = True
+        game.draw_interface()
         game.draw_map()
         game.draw_objects()
         game.process_input()

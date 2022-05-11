@@ -6,7 +6,6 @@ from PIL import Image
 import perlin as perlin
 import constants as const
 
-
 LANDSCAPE = {
     "soil": [0.9, pg.transform.scale(pg.image.load("assets/textures/soil.png"), (const.TILE_SIZE, const.TILE_SIZE))],
     "sand": [0.5, pg.transform.scale(pg.image.load("assets/textures/sand.png"), (const.TILE_SIZE, const.TILE_SIZE))],
@@ -48,7 +47,8 @@ def probability_bush():
 def probability_cliff(field, coord, surface, rad):
     is_rock_nearby = True
 
-    for i in range(max(coord[1] - rad, 0), min(surface.get_size()[1] // const.TILE_SIZE, coord[1] + rad + 1)):
+    for i in range(max(coord[1] - rad, 0),
+                   min(surface.get_size()[1] // const.TILE_SIZE, coord[1] + rad + 1 - const.INTERFACE_AMENDMENT)):
         for j in range(max(coord[0] - rad, 0), min(surface.get_size()[0] // const.TILE_SIZE, coord[0] + rad + 1)):
             if field[i][j].type != "rock":
                 is_rock_nearby = False
@@ -69,7 +69,7 @@ class Map:
         self.surface = surface
         self.size = size
         self.width = size[0] // const.TILE_SIZE
-        self.height = size[1] // const.TILE_SIZE
+        self.height = size[1] // const.TILE_SIZE - const.INTERFACE_AMENDMENT
         self.field = []
         self.perlin_size = 100
         self.res = 40
@@ -108,7 +108,7 @@ class Map:
         """
         Drawing the whole map in the current window
         """
-        for i in range(self.size[1] // const.TILE_SIZE):
+        for i in range(self.size[1] // const.TILE_SIZE - const.INTERFACE_AMENDMENT):
             for j in range(self.size[0] // const.TILE_SIZE):
                 tile_rect = (j * const.TILE_SIZE, i * const.TILE_SIZE, const.TILE_SIZE, const.TILE_SIZE)
                 landscape_texture = LANDSCAPE[self.field[i][j].type][1]
