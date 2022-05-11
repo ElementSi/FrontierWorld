@@ -108,8 +108,8 @@ class Map:
         """
         Drawing the whole map in the current window
         """
-        for i in range(self.size[1] // const.TILE_SIZE - const.INTERFACE_AMENDMENT):
-            for j in range(self.size[0] // const.TILE_SIZE):
+        for i in range(self.height):
+            for j in range(self.width):
                 tile_rect = (j * const.TILE_SIZE, i * const.TILE_SIZE, const.TILE_SIZE, const.TILE_SIZE)
                 landscape_texture = LANDSCAPE[self.field[i][j].type][1]
                 self.surface.blit(landscape_texture, tile_rect)

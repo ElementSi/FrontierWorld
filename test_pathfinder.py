@@ -33,6 +33,6 @@ for SolidObject in ListSolidObject:
     SolidObject.draw()
 
 pg.display.update()
-pg.time.wait(3000)
+pg.time.wait(1000)
 
 print(Settler.pathfinder([9, 9], GameMap, ListSolidObject))

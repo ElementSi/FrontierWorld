@@ -29,7 +29,7 @@ class Gameplay:
         self.clock = pg.time.Clock()
         self.interface = interface.InGameInterface(surface)
         self.game_map = game_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])
-        self.settler = objects.Settler(self.surface, [40, 20])
+        self.settler = objects.Settler(self.surface, [0, 0])
         self.list_solid_object = []
 
         for i in range(self.game_map.height):

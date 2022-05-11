@@ -171,16 +171,17 @@ def make_grid(region_map, list_solid_object):
     :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
     :return: grid: list[list[float]] - velocity multiplier matrix
     """
-    grid = list(list())
+    grid = []
     width = region_map.width
     height = region_map.height
 
     for i in range(0, height):
+        grid.append([])
         for j in range(0, width):
-            grid[i][j] = 1 / region_map.field[i][j].speed_mod
+            grid[-1].append(1 / region_map.field[i][j].speed_mod)
 
     for solid_object in list_solid_object:
-        grid[int(solid_object[1] + 0.5)][int(solid_object[0] + 0.5)] = 10000
+        grid[int(solid_object.coord[1] + 0.5)][int(solid_object.coord[0] + 0.5)] = 10000
 
     return grid
 
