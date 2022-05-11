@@ -222,10 +222,10 @@ is_game_ready = False
 while not is_finished:
     if menu.is_active:
         game_preset = menu.activate()
-        menu.update_state()
+        menu.update_menu()
         menu.draw_background()
         menu.draw()
-        menu.update_menu()
+        menu.update_display()
         is_finished = menu.is_finished
     else:
         if (game_preset == "new_game") and (not is_game_ready):

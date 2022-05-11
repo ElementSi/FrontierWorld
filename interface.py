@@ -272,7 +272,7 @@ class Menu:
                             self.menu_mod = "main_menu"
                             self.is_in_need_of_update = True
 
-    def update_state(self):
+    def update_menu(self):
         if self.is_in_need_of_update:
             if self.menu_mod == "main_menu":
                 self.frames.clear()
@@ -353,7 +353,7 @@ class Menu:
         for button in self.buttons:
             button.draw()
 
-    def update_menu(self):
+    def update_display(self):
         """
         Updating display to reflect changes of objects
         """
