@@ -410,7 +410,6 @@ class InGameInterface:
         ]
         self.interface_mod = "default"
         self.is_in_need_of_update = False
-        self.is_active = True
         self.is_finished = False
 
     def draw(self):

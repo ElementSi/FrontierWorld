@@ -2,6 +2,7 @@ import pygame as pg
 
 import constants as const
 import map_objects as objects
+import creature as creature
 import game_map as game_map
 import interface as interface
 
@@ -29,7 +30,7 @@ class Gameplay:
         self.clock = pg.time.Clock()
         self.interface = interface.InGameInterface(surface)
         self.game_map = game_map.Map(surface, [SCREEN_WIDTH, SCREEN_HEIGHT])
-        self.settler = objects.Settler(self.surface, [0, 0])
+        self.settler = creature.Settler(self.surface, [0, 0])
         self.list_solid_object = []
 
         for i in range(self.game_map.height):
@@ -90,9 +91,6 @@ class Gameplay:
         pg.display.update()
         self.clock.tick(const.FPS)
 
-    def _click(self, asdffas):
-        pass  # TODO
-
     def process_input(self):
         """
         Processing all player input
@@ -113,7 +111,9 @@ class Gameplay:
                 self.interface.activate(event)
 
             elif event.type == pg.MOUSEBUTTONDOWN:
-                # First, clicking on the interface buttons is checked
+                for button in self.interface.buttons:
+                    if button.key == "interface_go_to":
+                        self.picked_task = "go_to"
 
                 # Then, clicking on the objects is checked
                 if self.picked_task is None:
@@ -152,10 +152,7 @@ class Gameplay:
                                 break
 
                         if target_object is not None:
-                            self.settler.task = objects.ObjectTask(self.picked_task, target_object)
-
-                        else:
-                            pass  # TODO: need to send an error message "no object selected" to the interface
+                            self.settler.task = creature.ObjectTask(self.picked_task, target_object)
 
                     else:
                         object_interferes = False
@@ -171,7 +168,7 @@ class Gameplay:
                                 break
 
                         if not object_interferes:
-                            self.settler.task = objects.TileTask(self.picked_task, pixels2tiles(event.pos))
+                            self.settler.task = creature.TileTask(self.picked_task, pixels2tiles(event.pos))
 
     def move_creatures(self):
         """

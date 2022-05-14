@@ -6,12 +6,6 @@ from PIL import Image
 import perlin as perlin
 import constants as const
 
-LANDSCAPE = {
-    "soil": [0.9, pg.transform.scale(pg.image.load("assets/textures/soil.png"), (const.TILE_SIZE, const.TILE_SIZE))],
-    "sand": [0.5, pg.transform.scale(pg.image.load("assets/textures/sand.png"), (const.TILE_SIZE, const.TILE_SIZE))],
-    "rock": [0.7, pg.transform.scale(pg.image.load("assets/textures/rock.png"), (const.TILE_SIZE, const.TILE_SIZE))],
-}
-
 
 class Tile:
     """
@@ -26,7 +20,7 @@ class Tile:
         """
         self.surface = surface
         self.type = type
-        self.speed_mod, self.texture = LANDSCAPE[type]
+        self.speed_mod, self.texture = const.LANDSCAPE[type]
         self.pre_object = pre_object
 
 
@@ -111,7 +105,7 @@ class Map:
         for i in range(self.height):
             for j in range(self.width):
                 tile_rect = (j * const.TILE_SIZE, i * const.TILE_SIZE, const.TILE_SIZE, const.TILE_SIZE)
-                landscape_texture = LANDSCAPE[self.field[i][j].type][1]
+                landscape_texture = self.field[i][j].texture
                 self.surface.blit(landscape_texture, tile_rect)
 
     def safe(self, file):
