@@ -219,6 +219,7 @@ is_finished = False
 game_preset = "new_game"
 is_game_ready = False
 
+
 while not is_finished:
     if menu.is_active:
         game_preset = menu.activate()
