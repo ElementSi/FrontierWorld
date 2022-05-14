@@ -395,18 +395,7 @@ class InGameInterface:
                 "in-game_interface_menu",
                 int(0.02 * self.size[1]),
                 const.COLORS["dark_blue"]
-            ),
-            Button(
-                surface,
-                (self.size[0] - 23.8 * self.size[0] // const.TILE_SIZE,
-                 self.size[1] - 0.9 * const.TILE_SIZE * const.INTERFACE_AMENDMENT,
-                 0.08 * self.size[0] + 1,
-                 0.8 * const.TILE_SIZE * const.INTERFACE_AMENDMENT),
-                "Идти",
-                "interface_go_to",
-                int(0.02 * self.size[1]),
-                const.COLORS["light_blue"]
-            ),
+            )
         ]
         self.interface_mod = "default"
         self.is_in_need_of_update = False
@@ -490,3 +479,4 @@ class InGameInterface:
                         const.COLORS["light_blue"]
                     ),
                 ]
+                self.is_in_need_of_update = False

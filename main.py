@@ -13,7 +13,7 @@ SCREEN_HEIGHT = pg.display.Info().current_h
 
 
 def pixels2tiles(pixel_coords):
-    return [int(pixel_coords[0]), int(pixel_coords[1])]
+    return [pixel_coords[0] // const.TILE_SIZE, pixel_coords[1] // const.TILE_SIZE]
 
 
 class Gameplay:
@@ -138,6 +138,8 @@ class Gameplay:
                     if none_is_chosen:
                         self.chosen_map_object = None
 
+                    self.interface.is_in_need_of_update = True
+
                 else:
                     if const.TASKS[self.picked_task] == "object_task":
                         target_object = None
@@ -167,6 +169,7 @@ class Gameplay:
                                 break
 
                         if not object_interferes:
+                            print(pixels2tiles(event.pos))
                             self.settler.task = creature.TileTask(self.picked_task, pixels2tiles(event.pos))
 
                         else:
@@ -176,12 +179,15 @@ class Gameplay:
         if self.chosen_map_object is None:
             self.interface.interface_mod = "default"
 
-        elif self.chosen_map_object.type == "settler":
-            self.interface.interface_mod = "settler"
+        else:
+            self.interface.interface_mod = self.chosen_map_object.type
+
+        self.interface.update_interface()
 
     def do_tasks(self):
         if self.settler.task is not None:
             getattr(self.settler, self.settler.task.task_type)(self.game_map, self.list_solid_object)
+            self.settler.task = None
 
     def move_creatures(self):
         """
@@ -245,10 +251,12 @@ while not is_finished:
         elif not is_game_ready:
             game = Gameplay(screen)
             is_game_ready = True
+        game.process_input()
+        game.update_interface()
         game.draw_interface()
         game.draw_map()
         game.draw_objects()
-        game.process_input()
+        game.do_tasks()
         game.move_creatures()
         game.update_display()
         is_finished = game.is_finished

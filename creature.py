@@ -163,7 +163,10 @@ class Creature(objects.SolidObject):
 
     def go_to(self, region_map, list_solid_object):
         if not self.task.is_started:
-            self.path = [self.path[0], self.pathfinder(self.task.target_tile, region_map, list_solid_object)]
+            if len(self.path) > 0:
+                self.path = [self.path[0], self.pathfinder(self.task.target_tile, region_map, list_solid_object)]
+            else:
+                self.path = self.pathfinder(self.task.target_tile, region_map, list_solid_object)
 
     def attack(self):
         pass  # approach a specific creature and beat it

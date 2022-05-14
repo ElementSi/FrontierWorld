@@ -2,6 +2,7 @@ import pygame as pg
 
 import constants as const
 import map_objects as objects
+import creature as creature
 import game_map as game_map
 import interface as interface
 
@@ -26,7 +27,7 @@ for i in range(GameMap.height):
         elif GameMap.field[i][j].pre_object == "cliff":
             ListSolidObject.append(objects.Cliff(screen, [j, i]))
 
-Settler = objects.Settler(screen, [0, 0])
+Settler = creature.Settler(screen, [0, 0])
 
 GameMap.draw()
 for SolidObject in ListSolidObject:
