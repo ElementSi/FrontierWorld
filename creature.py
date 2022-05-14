@@ -1,5 +1,4 @@
 import pygame as pg
-import random as rnd
 
 import constants as const
 import map_objects as objects
@@ -13,6 +12,8 @@ class Task:
 
     def __init__(self, task_type):
         self.task_type = task_type
+        self.is_started = False
+        self.is_finished = False
 
 
 class ObjectTask(Task):
@@ -160,14 +161,12 @@ class Creature(objects.SolidObject):
 
         self.update_image()
 
-    def move_to(self):
-        pass  # approach a specific tile
+    def go_to(self, region_map, list_solid_object):
+        if not self.task.is_started:
+            self.path = [self.path[0], self.pathfinder(self.task.target_tile, region_map, list_solid_object)]
 
     def attack(self):
         pass  # approach a specific creature and beat it
-
-    def do_task(self):
-        pass  # do task from the self.task
 
     def death(self):
         """

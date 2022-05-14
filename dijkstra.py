@@ -108,10 +108,11 @@ def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object):
     path.append(coordinates)
     while cur_node != start:
         cur_node = visited[cur_node]
-        coordinates = [cur_node[0], cur_node[1]]
+        coordinates = [cur_node[1], cur_node[0]]
         path.append(coordinates)
 
     path.reverse()
+    path.pop(0)
     return path
 
 

@@ -112,8 +112,9 @@ class Gameplay:
 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 for button in self.interface.buttons:
-                    if button.key == "interface_go_to":
-                        self.picked_task = "go_to"
+                    if interface.is_hovered(event, button.draw_box):
+                        if button.key == "interface_go_to":
+                            self.picked_task = "go_to"
 
                 # Then, clicking on the objects is checked
                 if self.picked_task is None:
@@ -154,6 +155,9 @@ class Gameplay:
                         if target_object is not None:
                             self.settler.task = creature.ObjectTask(self.picked_task, target_object)
 
+                        else:
+                            self.picked_task = None
+
                     else:
                         object_interferes = False
 
@@ -162,13 +166,22 @@ class Gameplay:
                                 object_interferes = True
                                 break
 
-                        for loot_item in self.list_loot:
-                            if objects.is_picked(event, loot_item.coord):
-                                object_interferes = True
-                                break
-
                         if not object_interferes:
                             self.settler.task = creature.TileTask(self.picked_task, pixels2tiles(event.pos))
+
+                        else:
+                            self.picked_task = None
+
+    def update_interface(self):
+        if self.chosen_map_object is None:
+            self.interface.interface_mod = "default"
+
+        elif self.chosen_map_object.type == "settler":
+            self.interface.interface_mod = "settler"
+
+    def do_tasks(self):
+        if self.settler.task is not None:
+            getattr(self.settler, self.settler.task.task_type)(self.game_map, self.list_solid_object)
 
     def move_creatures(self):
         """

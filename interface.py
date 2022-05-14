@@ -490,7 +490,3 @@ class InGameInterface:
                         const.COLORS["light_blue"]
                     ),
                 ]
-
-
-        #олжна быть кнопка меню + фрейм
-        #селф.мод сеттлер == баттон идти
