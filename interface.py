@@ -424,7 +424,73 @@ class InGameInterface:
                 button.hover(event)
 
     def update_interface(self):
-        if self.interface_mod == "default":
-            pass
+        if self.is_in_need_of_update:
+            if self.interface_mod == "default":
+                self.frames.clear()
+                self.buttons.clear()
+                self.frames = [
+                    Frame(
+                        self.surface,
+                        (0.05 * self.size[0],
+                         0.05 * self.size[0],
+                         0.3 * self.size[0],
+                         0.6 * self.size[1]),
+                        [const.COLORS["light_blue"], const.COLORS["dark_blue"]]
+                    )
+                ]
+                self.buttons = [
+                SimplifiedButton(
+                    self.surface,
+                    (self.size[0] - 0.15 * self.size[0],
+                     self.size[1] - const.TILE_SIZE * const.INTERFACE_AMENDMENT,
+                     0.15 * self.size[0] + 1,
+                     const.TILE_SIZE * const.INTERFACE_AMENDMENT),
+                    "Меню",
+                    "in-game_interface_menu",
+                    int(0.02 * self.size[1]),
+                    const.COLORS["dark_blue"]
+                    )
+                ]
+                self.is_in_need_of_update = False
+
+            elif self.interface_mod == "settler":
+                self.frames.clear()
+                self.buttons.clear()
+                self.frames = [
+                    Frame(
+                        self.surface,
+                        (0.05 * self.size[0],
+                         0.05 * self.size[0],
+                         0.3 * self.size[0],
+                         0.6 * self.size[1]),
+                        [const.COLORS["light_blue"], const.COLORS["dark_blue"]]
+                    )
+                ]
+                self.buttons = [
+                    SimplifiedButton(
+                        self.surface,
+                        (self.size[0] - 0.15 * self.size[0],
+                         self.size[1] - const.TILE_SIZE * const.INTERFACE_AMENDMENT,
+                         0.15 * self.size[0] + 1,
+                         const.TILE_SIZE * const.INTERFACE_AMENDMENT),
+                        "Меню",
+                        "in-game_interface_menu",
+                        int(0.02 * self.size[1]),
+                        const.COLORS["dark_blue"]
+                    ),
+                    Button(
+                        self.surface,
+                        (self.size[0] - 23.8 * self.size[0] // const.TILE_SIZE,
+                         self.size[1] - 0.9 * const.TILE_SIZE * const.INTERFACE_AMENDMENT,
+                         0.08 * self.size[0] + 1,
+                         0.8 * const.TILE_SIZE * const.INTERFACE_AMENDMENT),
+                        "Идти",
+                        "interface_go_to",
+                        int(0.02 * self.size[1]),
+                        const.COLORS["light_blue"]
+                    ),
+                ]
+
+
         #олжна быть кнопка меню + фрейм
         #селф.мод сеттлер == баттон идти
