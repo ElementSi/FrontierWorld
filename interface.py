@@ -428,4 +428,4 @@ class InGameInterface:
         if self.interface_mod == "default":
             pass
         #олжна быть кнопка меню + фрейм
-        # селф.мод сеттлер == баттон идти
+        #селф.мод сеттлер == баттон идти
