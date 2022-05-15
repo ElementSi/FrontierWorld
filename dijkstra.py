@@ -68,6 +68,20 @@ def get_next_nodes(x, y, region_map, list_solid_object):
     return [(grid[y + dy][x + dx], (x + dx, y + dy)) for dx, dy in ways if check_next_node(x + dx, y + dy, cols, rows)]
 
 
+def checker_of_path(path, list_solid_object):
+    """
+    checking if there are other objects on the path
+    :param path: list[list[float]] - ptah of settler
+    :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
+    :return: bool
+    """
+    for element_of_path in path:
+        for element_of_objects in list_solid_object:
+            if element_of_path == element_of_objects.coord:
+                return True
+    return False
+
+
 def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object):
     """
     Implementation of Dijkstra 's algorithm
@@ -112,23 +126,28 @@ def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object):
         path.append(coordinates)
 
     path.reverse()
+    path.pop(0)
+
+    if checker_of_path(path, list_solid_object):
+        return []
+
     return path
 
 
-def time_counter(path_to_finish, region_map):
+def time_counter(path, region_map):
     """
     Counting time which is necessary to overcome the path
-    :param path_to_finish: list[list[float]]
+    :param path: list[list[float]] - ptah of settler
     :param region_map: Map object - map of the game region
     :return: float - time
     """
     time = 0.0
     number_element = 1
-    while number_element != path_to_finish.size():
-        x0 = path_to_finish[number_element - 1][0]
-        y0 = path_to_finish[number_element - 1][1]
-        x1 = path_to_finish[number_element][0]
-        y1 = path_to_finish[number_element][1]
+    while number_element != path.size():
+        x0 = path[number_element - 1][0]
+        y0 = path[number_element - 1][1]
+        x1 = path[number_element][0]
+        y1 = path[number_element][1]
         facet = cmath.sqrt((x0 - x1) ** 2 + (y0 - y1) ** 2)
         time += facet / region_map.field[y0][x0].speed_mod
     return time
