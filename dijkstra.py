@@ -126,8 +126,6 @@ def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object):
         path.append(coordinates)
 
     path.reverse()
-    path.pop(0)
-
     if checker_of_path(path, list_solid_object):
         return []
 
