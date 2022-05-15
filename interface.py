@@ -393,12 +393,11 @@ class InGameInterface:
                  const.TILE_SIZE * const.INTERFACE_AMENDMENT),
                 "Меню",
                 "in-game_interface_menu",
-                int(0.02 * self.size[1]),
+                int(0.03 * self.size[1]),
                 const.COLORS["dark_blue"]
             )
         ]
         self.interface_mod = "default"
-        self.is_in_need_of_update = False
         self.is_finished = False
 
     def draw(self):
@@ -412,71 +411,47 @@ class InGameInterface:
             for button in self.buttons:
                 button.hover(event)
 
-    def update_interface(self):
-        if self.is_in_need_of_update:
-            if self.interface_mod == "default":
-                self.frames.clear()
-                self.buttons.clear()
-                self.frames = [
-                    Frame(
-                        self.surface,
-                        (0.05 * self.size[0],
-                         0.05 * self.size[0],
-                         0.3 * self.size[0],
-                         0.6 * self.size[1]),
-                        [const.COLORS["light_blue"], const.COLORS["dark_blue"]]
-                    )
-                ]
-                self.buttons = [
+    def update_interface(self, mod):
+        self.interface_mod = mod
+
+        if self.interface_mod == "default":
+            self.frames.clear()
+            self.buttons.clear()
+            self.frames = [
+                Frame(
+                    self.surface,
+                    (0,
+                     self.size[1] - const.TILE_SIZE * const.INTERFACE_AMENDMENT,
+                     self.size[0],
+                     const.TILE_SIZE * const.INTERFACE_AMENDMENT),
+                    [const.COLORS["light_blue"], const.COLORS["dark_blue"]]
+                )
+            ]
+            self.buttons = [
                 SimplifiedButton(
                     self.surface,
-                    (self.size[0] - 0.15 * self.size[0],
+                    (0.85 * self.size[0],
                      self.size[1] - const.TILE_SIZE * const.INTERFACE_AMENDMENT,
                      0.15 * self.size[0] + 1,
                      const.TILE_SIZE * const.INTERFACE_AMENDMENT),
                     "Меню",
                     "in-game_interface_menu",
-                    int(0.02 * self.size[1]),
+                    int(0.03 * self.size[1]),
                     const.COLORS["dark_blue"]
-                    )
-                ]
-                self.is_in_need_of_update = False
+                )
+            ]
 
-            elif self.interface_mod == "settler":
-                self.frames.clear()
-                self.buttons.clear()
-                self.frames = [
-                    Frame(
-                        self.surface,
-                        (0.05 * self.size[0],
-                         0.05 * self.size[0],
-                         0.3 * self.size[0],
-                         0.6 * self.size[1]),
-                        [const.COLORS["light_blue"], const.COLORS["dark_blue"]]
-                    )
-                ]
-                self.buttons = [
-                    SimplifiedButton(
-                        self.surface,
-                        (self.size[0] - 0.15 * self.size[0],
-                         self.size[1] - const.TILE_SIZE * const.INTERFACE_AMENDMENT,
-                         0.15 * self.size[0] + 1,
-                         const.TILE_SIZE * const.INTERFACE_AMENDMENT),
-                        "Меню",
-                        "in-game_interface_menu",
-                        int(0.02 * self.size[1]),
-                        const.COLORS["dark_blue"]
-                    ),
-                    Button(
-                        self.surface,
-                        (self.size[0] - 23.8 * self.size[0] // const.TILE_SIZE,
-                         self.size[1] - 0.9 * const.TILE_SIZE * const.INTERFACE_AMENDMENT,
-                         0.08 * self.size[0] + 1,
-                         0.8 * const.TILE_SIZE * const.INTERFACE_AMENDMENT),
-                        "Идти",
-                        "interface_go_to",
-                        int(0.02 * self.size[1]),
-                        const.COLORS["light_blue"]
-                    ),
-                ]
-                self.is_in_need_of_update = False
+        elif self.interface_mod == "settler":
+            self.buttons.append(
+                Button(
+                    self.surface,
+                    (0.01 * self.size[0],
+                     self.size[1] - const.TILE_SIZE * const.INTERFACE_AMENDMENT + 0.01 * self.size[0],
+                     0.10 * self.size[0],
+                     const.TILE_SIZE * const.INTERFACE_AMENDMENT - 0.02 * self.size[0]),
+                    "Идти",
+                    "interface_go_to",
+                    int(0.02 * self.size[1]),
+                    const.COLORS["cream"]
+                )
+            )

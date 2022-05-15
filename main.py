@@ -30,6 +30,7 @@ while not is_finished:
         elif not is_game_ready:
             game = gameplay.Gameplay(screen)
             is_game_ready = True
+
         game.process_input()
         game.update_interface()
         game.draw_interface()

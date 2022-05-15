@@ -84,7 +84,7 @@ def checker_of_path(path, list_solid_object):
 
 def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object):
     """
-    Implementation of Dijkstra 's algorithm
+    Implementation of Dijkstra's algorithm
     :param creature_coord: [float, float] - coordinates of creature for whom we are looking for a way
     :param goal_coord: [int, int] - finish coordinate
     :param region_map: GameMap object - map of the game region

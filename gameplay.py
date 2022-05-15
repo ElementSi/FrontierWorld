@@ -8,6 +8,11 @@ import creature as creature
 
 
 def pixels2tiles(pixel_coords):
+    """
+    Converting pixel coordinates to tile coordinates
+    :param pixel_coords: list[int, int] - coordinates in pixels [x, y]
+    :return: list[int, int] - coordinates in tiles [x, y]
+    """
     return [pixel_coords[0] // const.TILE_SIZE, pixel_coords[1] // const.TILE_SIZE]
 
 
@@ -122,23 +127,21 @@ class Gameplay:
                     none_is_chosen = True
 
                     for solid_object in self.list_solid_object:
-                        if solid_object.choose(event):  # choice of solid object & saving information about it
+                        if solid_object.choose(event):
                             none_is_chosen = False
                             self.chosen_map_object = solid_object
 
                     for loot_item in self.list_loot:
-                        if loot_item.choose(event):  # choice of loot item & saving information about it
+                        if loot_item.choose(event):
                             none_is_chosen = False
                             self.chosen_map_object = loot_item
 
-                    if self.settler.choose(event):  # choice of settler & saving information about it
+                    if self.settler.choose(event):
                         none_is_chosen = False
                         self.chosen_map_object = self.settler
 
                     if none_is_chosen:
                         self.chosen_map_object = None
-
-                    self.interface.is_in_need_of_update = True
 
                 else:
                     if const.TASKS[self.picked_task] == "object_task":
@@ -157,9 +160,6 @@ class Gameplay:
                         if target_object is not None:
                             self.settler.task = creature.ObjectTask(self.picked_task, target_object)
 
-                        else:
-                            self.picked_task = None
-
                     else:
                         object_interferes = False
 
@@ -171,19 +171,22 @@ class Gameplay:
                         if not object_interferes:
                             self.settler.task = creature.TileTask(self.picked_task, pixels2tiles(event.pos))
 
-                        else:
-                            self.picked_task = None
+                    self.picked_task = None
 
     def update_interface(self):
-        if self.chosen_map_object is None:
-            self.interface.interface_mod = "default"
+        """
+        Updating the mod of interface according to chosen object
+        """
+        if (self.chosen_map_object is None) and (self.interface.interface_mod != "default"):
+            self.interface.update_interface("default")
 
-        else:
-            self.interface.interface_mod = self.chosen_map_object.type
-
-        self.interface.update_interface()
+        elif (self.chosen_map_object is not None) and (self.interface.interface_mod != self.chosen_map_object.type):
+            self.interface.update_interface(self.chosen_map_object.type)
 
     def do_tasks(self):
+        """
+        Execution of tasks by creatures in accordance with the name of the tasks
+        """
         if self.settler.task is not None:
             getattr(self.settler, self.settler.task.task_type)(self.game_map, self.list_solid_object)
             self.settler.task = None

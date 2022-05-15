@@ -1,4 +1,5 @@
 import pygame as pg
+import numpy as np
 
 import constants as const
 import map_objects as objects
@@ -162,6 +163,11 @@ class Creature(objects.SolidObject):
         self.update_image()
 
     def go_to(self, region_map, list_solid_object):
+        """
+        Moving to a given tile along a suitable path
+        :param region_map: GameMap object - map of the game region
+        :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
+        """
         if not self.task.is_started:
             if len(self.path) > 0:
                 self.path = [self.path[0]] + self.pathfinder(self.task.target_tile, region_map, list_solid_object)
@@ -237,6 +243,26 @@ class Settler(Creature):
             self.hit_points = hit_points
         self.damage = 2.0
         self.type = "settler"
+
+    def draw(self):
+        super().draw()
+
+        if len(self.path) > 0:
+            transparent_surface = pg.Surface(
+                (self.surface.get_size()),
+                pg.SRCALPHA
+            )
+
+            array_path = np.array(self.path, float)
+            array_path = np.insert(array_path, 0, [self.coord], axis=0)
+            pg.draw.aalines(
+                transparent_surface,
+                const.COLORS["white"] + (120,),
+                False,
+                array_path * const.TILE_SIZE + 12
+            )
+
+            self.surface.blit(transparent_surface, (0, 0))
 
     def chop(self):
         pass  # approach a specific tree/bush and cut it down
