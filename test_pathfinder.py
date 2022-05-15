@@ -14,7 +14,7 @@ SCREEN_HEIGHT = pg.display.Info().current_h
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-GameMap = game_map.Map(screen, [SCREEN_WIDTH, SCREEN_HEIGHT])
+GameMap = game_map.GameMap(screen, [SCREEN_WIDTH, SCREEN_HEIGHT])
 
 ListSolidObject = []
 

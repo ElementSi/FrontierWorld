@@ -5,7 +5,7 @@ import heapq
 def make_grid(region_map, list_solid_object):
     """
     Making cell velocity multiplier matrix
-    :param region_map: Map object - map of the game region
+    :param region_map: GameMap object - map of the game region
     :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
     :return: grid: list[list[float]] - velocity multiplier matrix
     """
@@ -28,7 +28,7 @@ def make_graph(region_map, list_solid_object):
     """
     Making a dict. The Key: velocity coefficient values at the given coordinate
                   Value: velocity coefficient values around the given coordinate
-    :param region_map: Map object - map of the game region
+    :param region_map: GameMap object - map of the game region
     :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
     :return: {float: list[float]}: The Key - velocity coefficient values around the given tile
     """
@@ -57,7 +57,7 @@ def get_next_nodes(x, y, region_map, list_solid_object):
     Finding cell coordinates around the current in a certain direction
     :param x: float - x location coordinate
     :param y: float - y location coordinate
-    :param region_map: Map object - map of the game region
+    :param region_map: GameMap object - map of the game region
     :param list_solid_object: list[SolidObject object,...] - list of all objects that can block a path
     :return: [float, float] - coordinate around the current in a certain direction
     """
@@ -87,9 +87,9 @@ def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object):
     Implementation of Dijkstra 's algorithm
     :param creature_coord: [float, float] - coordinates of creature for whom we are looking for a way
     :param goal_coord: [int, int] - finish coordinate
-    :param region_map: Map object - map of the game region
+    :param region_map: GameMap object - map of the game region
     :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
-    :return: list[list[int, int],...] - list of tiles to go through
+    :return: list[list[int, int],...] - list of tiles [y, x] to go through
     """
     graph = make_graph(region_map, list_solid_object)
     start = (int(creature_coord[0] + 0.5), int(creature_coord[1] + 0.5))
@@ -136,7 +136,7 @@ def time_counter(path, region_map):
     """
     Counting time which is necessary to overcome the path
     :param path: list[list[float]] - ptah of settler
-    :param region_map: Map object - map of the game region
+    :param region_map: GameMap object - map of the game region
     :return: float - time
     """
     time = 0.0

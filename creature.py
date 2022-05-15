@@ -58,7 +58,7 @@ class Creature(objects.SolidObject):
         }
         self.draw_box = objects.create_draw_box(self.coord, self.draw_features, "default")
         self.texture = objects.create_texture(self.draw_features, "default")
-        self.speed = 0.05  # Base value [tile/tick]
+        self.speed = 0.1  # Base value [tile/tick]
         self.damage = 1.0  # Base value [hit point]
         self.melee_cooldown = 60.0  # Base value [tick]
         self.path = []
@@ -94,7 +94,7 @@ class Creature(objects.SolidObject):
         """
         Finding the best way to the goal on the map
         :param goal_coord: list[int, int] - coordinates' of target cell
-        :param region_map: Map object - map of the game region
+        :param region_map: GameMap object - map of the game region
         :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
         :return: list[list[float, float],...] - list of tiles to go through
         """
@@ -134,7 +134,7 @@ class Creature(objects.SolidObject):
     def move(self, region_map):
         """
         Changing coordinates of the creature due to its movement
-        :param region_map: Map object - map of the game region
+        :param region_map: GameMap object - map of the game region
         """
         if len(self.path) > 0:
             if self.direction == [0, 0]:
@@ -164,7 +164,7 @@ class Creature(objects.SolidObject):
     def go_to(self, region_map, list_solid_object):
         if not self.task.is_started:
             if len(self.path) > 0:
-                self.path = [self.path[0], self.pathfinder(self.task.target_tile, region_map, list_solid_object)]
+                self.path = [self.path[0]] + self.pathfinder(self.task.target_tile, region_map, list_solid_object)
             else:
                 self.path = self.pathfinder(self.task.target_tile, region_map, list_solid_object)
 

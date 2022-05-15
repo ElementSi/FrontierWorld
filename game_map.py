@@ -53,9 +53,9 @@ def probability_cliff(field, coord, surface, rad):
         return None
 
 
-class Map:
+class GameMap:
     """
-    Map consisting of tiles arranged in a grid
+    GameMap consisting of tiles arranged in a grid
     """
 
     def __init__(self, surface, size):
