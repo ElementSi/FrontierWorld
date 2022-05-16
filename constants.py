@@ -4,6 +4,7 @@ FPS = 60
 TILE_SIZE = 24
 FONT = "fonts/Montserrat-Medium.ttf"
 INTERFACE_AMENDMENT = 3
+ANIMALS_LIMIT = 2
 
 COLORS = {
     "white": (255, 255, 255),

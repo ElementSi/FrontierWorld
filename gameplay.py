@@ -1,4 +1,5 @@
 import pygame as pg
+import random as rnd
 
 import constants as const
 import interface as interface
@@ -16,6 +17,34 @@ def pixels2tiles(pixel_coords):
     return [pixel_coords[0] // const.TILE_SIZE, pixel_coords[1] // const.TILE_SIZE]
 
 
+def safety_spawn(list_solid_object, spawn_box, mode="anywhere"):
+    """
+    Spawn creatures in a random guaranteed suitable tile
+    :param list_solid_object: list[SolidObject object,...] - list of all solid objects
+    :param spawn_box: list[int, int] - the size of the area where spawn is allowed
+    :param mode: string - spawn mode (everywhere or only at the border)
+    :return: list[int, int] - coordinates of suitable tile
+    """
+    suitable_tile = [0, 0]
+    is_found = False
+
+    while not is_found:
+        is_found = True
+        rnd_coord = [rnd.randint(0, spawn_box[0]), rnd.randint(0, spawn_box[1])]
+
+        if mode == "border":
+            if (rnd_coord[0] * rnd_coord[1] != 0) and (rnd_coord[0] != spawn_box[0]) and (rnd_coord[1] != spawn_box[1]):
+                is_found = False
+
+        for obj in list_solid_object:
+            if (int(obj.coord[0]) == rnd_coord[0]) and (int(obj.coord[1]) == rnd_coord[1]):
+                is_found = False
+
+        suitable_tile = rnd_coord
+
+    return suitable_tile
+
+
 class Gameplay:
     """
     Gameplay itself
@@ -30,7 +59,6 @@ class Gameplay:
         self.clock = pg.time.Clock()
         self.interface = interface.InGameInterface(surface)
         self.game_map = game_map.GameMap(surface, surface.get_size())
-        self.settler = creature.Settler(self.surface, [0, 0])
         self.list_solid_object = []
 
         for i in range(self.game_map.height):
@@ -41,9 +69,17 @@ class Gameplay:
                     self.list_solid_object.append(objects.Bush(self.surface, [j, i]))
                 elif self.game_map.field[i][j].pre_object == "cliff":
                     self.list_solid_object.append(objects.Cliff(self.surface, [j, i]))
+                elif self.game_map.field[i][j].pre_object == "deer":
+                    self.list_solid_object.append(creature.Deer(self.surface, [j, i]))
 
+        self.settler = creature.Settler(self.surface, safety_spawn(
+            self.list_solid_object,
+            [self.game_map.width - 1, self.game_map.height - 1],
+        ))
         self.list_effects = []
         self.list_loot = []
+        self.number_of_animals = 0
+        self.scan_time = 0
         self.chosen_map_object = None
         self.picked_task = None
         self.is_finished = False
@@ -52,7 +88,19 @@ class Gameplay:
         """
         Randomly spawn new animal on the border of the map
         """
-        pass
+        if (pg.time.get_ticks() > self.scan_time + 100) and (self.number_of_animals < const.ANIMALS_LIMIT):
+            rand_num = rnd.random()
+            if rand_num < 0.1:
+                self.list_solid_object.append(
+                    creature.Deer(
+                        self.surface,
+                        safety_spawn(self.list_solid_object,
+                                     [self.game_map.width - 1, self.game_map.height - 1],
+                                     "border"),
+                    )
+                )
+                self.number_of_animals += 1
+            self.scan_time = pg.time.get_ticks()
 
     def draw_interface(self):
         """
@@ -91,87 +139,100 @@ class Gameplay:
         pg.display.update()
         self.clock.tick(const.FPS)
 
+    def _process_quit(self, event):
+        self.is_finished = True
+
+    def _process_keydown(self, event):
+        if event.key == pg.K_ESCAPE:
+            if self.chosen_map_object is None:
+                self.is_finished = True
+            else:
+                self.chosen_map_object.is_chosen = False
+                self.chosen_map_object = None
+
+    def _process_interface(self, event):
+        is_interface_used = False
+
+        for button in self.interface.buttons:
+            if interface.is_hovered(event, button.draw_box):
+                is_interface_used = True
+                if button.key == "interface_go_to":
+                    self.picked_task = "go_to"
+
+        return is_interface_used
+
+    def _process_if_no_picked_task(self, event):
+        none_is_chosen = True
+
+        for solid_object in self.list_solid_object:
+            if solid_object.choose(event):
+                none_is_chosen = False
+                self.chosen_map_object = solid_object
+
+        for loot_item in self.list_loot:
+            if loot_item.choose(event):
+                none_is_chosen = False
+                self.chosen_map_object = loot_item
+
+        if self.settler.choose(event):
+            none_is_chosen = False
+            self.chosen_map_object = self.settler
+
+        if none_is_chosen:
+            self.chosen_map_object = None
+
+    def _process_if_picked_task(self, event):
+        if const.TASKS[self.picked_task] == "object_task":
+            target_object = None
+
+            for solid_object in self.list_solid_object:
+                if objects.is_picked(event, solid_object.coord):
+                    target_object = solid_object
+                    break
+
+            for loot_item in self.list_loot:
+                if objects.is_picked(event, loot_item.coord):
+                    target_object = loot_item
+                    break
+
+            if target_object is not None:
+                self.settler.task = creature.ObjectTask(self.picked_task, target_object)
+
+        else:
+            object_interferes = False
+
+            for solid_object in self.list_solid_object:
+                if objects.is_picked(event, solid_object.coord):
+                    object_interferes = True
+                    break
+
+            if not object_interferes:
+                self.settler.task = creature.TileTask(self.picked_task, pixels2tiles(event.pos))
+
+        self.picked_task = None
+
     def process_input(self):
         """
         Processing all player input
         """
         for event in pg.event.get():
             if event.type == pg.QUIT:
-                self.is_finished = True
+                self._process_quit(event)
 
             elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
-                    if self.chosen_map_object is None:
-                        self.is_finished = True
-                    else:
-                        self.chosen_map_object.is_chosen = False
-                        self.chosen_map_object = None
+                self._process_keydown(event)
 
             elif event.type == pg.MOUSEMOTION:
                 self.interface.activate(event)
 
             elif event.type == pg.MOUSEBUTTONDOWN:
-                is_interface_used = False
-
-                for button in self.interface.buttons:
-                    if interface.is_hovered(event, button.draw_box):
-                        is_interface_used = True
-                        if button.key == "interface_go_to":
-                            self.picked_task = "go_to"
-
-                if is_interface_used:
+                if self._process_interface(event):
                     continue
 
                 if self.picked_task is None:
-
-                    none_is_chosen = True
-
-                    for solid_object in self.list_solid_object:
-                        if solid_object.choose(event):
-                            none_is_chosen = False
-                            self.chosen_map_object = solid_object
-
-                    for loot_item in self.list_loot:
-                        if loot_item.choose(event):
-                            none_is_chosen = False
-                            self.chosen_map_object = loot_item
-
-                    if self.settler.choose(event):
-                        none_is_chosen = False
-                        self.chosen_map_object = self.settler
-
-                    if none_is_chosen:
-                        self.chosen_map_object = None
-
+                    self._process_if_no_picked_task(event)
                 else:
-                    if const.TASKS[self.picked_task] == "object_task":
-                        target_object = None
-
-                        for solid_object in self.list_solid_object:
-                            if objects.is_picked(event, solid_object.coord):
-                                target_object = solid_object
-                                break
-
-                        for loot_item in self.list_loot:
-                            if objects.is_picked(event, loot_item.coord):
-                                target_object = loot_item
-                                break
-
-                        if target_object is not None:
-                            self.settler.task = creature.ObjectTask(self.picked_task, target_object)
-
-                    else:
-                        object_interferes = False
-
-                        for solid_object in self.list_solid_object:
-                            if objects.is_picked(event, solid_object.coord):
-                                object_interferes = True
-                                break
-
-                        if not object_interferes:
-                            self.settler.task = creature.TileTask(self.picked_task, pixels2tiles(event.pos))
-
-                    self.picked_task = None
+                    self._process_if_picked_task(event)
 
     def update_interface(self):
         """
@@ -189,7 +250,15 @@ class Gameplay:
         """
         if self.settler.task is not None:
             getattr(self.settler, self.settler.task.task_type)(self.game_map, self.list_solid_object)
-            self.settler.task = None
+            if self.settler.task.is_finished:
+                self.settler.task = None
+
+        for solid_object in self.list_solid_object:
+            if hasattr(solid_object, 'task'):
+                if solid_object.task is not None:
+                    getattr(solid_object, solid_object.task.task_type)(self.game_map, self.list_solid_object)
+                    if solid_object.task.is_finished:
+                        solid_object.task = None
 
     def move_creatures(self):
         """
@@ -207,7 +276,7 @@ class Gameplay:
         """
         for solid_object in self.list_solid_object:
             if hasattr(solid_object, 'decide_to_move'):
-                solid_object.decide_to_move()
+                solid_object.decide_to_move(self.game_map)
             if hasattr(solid_object, 'decide_to_attack'):
                 solid_object.decide_to_attack()
 

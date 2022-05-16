@@ -1,5 +1,6 @@
 import pygame as pg
 import numpy as np
+import random as rnd
 
 import constants as const
 import map_objects as objects
@@ -173,6 +174,10 @@ class Creature(objects.SolidObject):
                 self.path = [self.path[0]] + self.pathfinder(self.task.target_tile, region_map, list_solid_object)
             else:
                 self.path = self.pathfinder(self.task.target_tile, region_map, list_solid_object)
+            self.task.is_started = True
+
+        if len(self.path) == 0:
+            self.task.is_finished = True
 
     def attack(self):
         pass  # approach a specific creature and beat it
@@ -207,8 +212,9 @@ class Animal(Creature):
         self.was_attacked = was_attacked
         self.type = "def_animal"
 
-    def decide_to_move(self):
-        pass  # need to create task "move_to" with random chance
+    def decide_to_move(self, game_map):
+        if rnd.random() < 0.01 and len(self.path) == 0:
+            self.task = TileTask("go_to", [rnd.randint(0, game_map.width - 1), rnd.randint(0, game_map.height - 1)])
 
     def decide_to_attack(self):
         pass  # need to create task "attack" if animal was attacked
@@ -245,8 +251,6 @@ class Settler(Creature):
         self.type = "settler"
 
     def draw(self):
-        super().draw()
-
         if len(self.path) > 0:
             transparent_surface = pg.Surface(
                 (self.surface.get_size()),
@@ -263,6 +267,8 @@ class Settler(Creature):
             )
 
             self.surface.blit(transparent_surface, (0, 0))
+
+        super().draw()
 
     def chop(self):
         pass  # approach a specific tree/bush and cut it down
@@ -317,7 +323,7 @@ class Deer(Animal):
             self.hit_points = self.full_hit_points
         else:
             self.hit_points = hit_points
-        self.speed = 0.8
+        self.speed = 0.05
         self.damage = 0.5
         self.melee_cooldown = 120.0
         self.type = "deer"

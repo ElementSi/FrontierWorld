@@ -68,17 +68,19 @@ def get_next_nodes(x, y, region_map, list_solid_object):
     return [(grid[y + dy][x + dx], (x + dx, y + dy)) for dx, dy in ways if check_next_node(x + dx, y + dy, cols, rows)]
 
 
-def checker_of_path(path, list_solid_object):
+def checker_of_path(creature_coord, path, list_solid_object):
     """
-    checking if there are other objects on the path
-    :param path: list[list[float]] - ptah of settler
+    Checking if there are other objects on the path
+    :param creature_coord: list[int, int] - current tile of creature
+    :param path: list[list[int, int]] - path of creature
     :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
     :return: bool
     """
-    for element_of_path in path:
-        for element_of_objects in list_solid_object:
-            if element_of_path == element_of_objects.coord:
-                return True
+    for tile in path:
+        if tile != creature_coord:
+            for obj in list_solid_object:
+                if tile == obj.coord:
+                    return True
     return False
 
 
@@ -126,7 +128,7 @@ def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object):
         path.append(coordinates)
 
     path.reverse()
-    if checker_of_path(path, list_solid_object):
+    if checker_of_path(creature_coord, path, list_solid_object):
         return []
 
     return path
@@ -135,7 +137,7 @@ def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object):
 def time_counter(path, region_map):
     """
     Counting time which is necessary to overcome the path
-    :param path: list[list[float]] - ptah of settler
+    :param path: list[list[float]] - path of creature
     :param region_map: GameMap object - map of the game region
     :return: float - time
     """

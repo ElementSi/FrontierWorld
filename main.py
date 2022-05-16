@@ -36,6 +36,8 @@ while not is_finished:
         game.draw_interface()
         game.draw_map()
         game.draw_objects()
+        game.create_new_animal()
+        game.ai_acts()
         game.do_tasks()
         game.move_creatures()
         game.update_display()
