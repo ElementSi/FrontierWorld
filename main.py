@@ -15,7 +15,7 @@ is_game_ready = False
 
 while not is_finished:
     if menu.is_active:
-        game_preset = menu.activate()
+        is_game_ready = menu.activate()
         menu.update_menu()
         menu.draw_background()
         menu.draw()
@@ -23,7 +23,7 @@ while not is_finished:
         is_finished = menu.is_finished
 
     else:
-        if (game_preset == "new_game") and (not is_game_ready):
+        if not is_game_ready:
             game = gameplay.Gameplay(screen, menu)
             is_game_ready = True
         game.process_input()

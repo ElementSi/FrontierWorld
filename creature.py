@@ -312,7 +312,7 @@ class Wolf(Animal):
         }
         self.draw_box = objects.create_draw_box(self.coord, self.draw_features, "default")
         self.texture = objects.create_texture(self.draw_features, "default")
-        self.speed = 0.7
+        self.speed = 0.12
         self.full_hit_points = 16.0
         if hit_points > self.full_hit_points:
             self.hit_points = self.full_hit_points
@@ -345,7 +345,7 @@ class Turtle(Animal):
         }
         self.draw_box = objects.create_draw_box(self.coord, self.draw_features, "default")
         self.texture = objects.create_texture(self.draw_features, "default")
-        self.speed = 0.2
+        self.speed = 0.03
         self.damage = 0.5
         self.melee_cooldown = 80.0
         self.activity_rate = 0.1

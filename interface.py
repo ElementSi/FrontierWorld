@@ -265,10 +265,10 @@ class Menu:
                     if is_hovered(event, button.draw_box):
                         if button.key == "main_menu_new_game":
                             self.is_active = False
-                            return "new_game"
+                            return False
                         elif button.key == "main_menu_download_game":
-                            self.menu_mod = "download_menu"
-                            self.is_in_need_of_update = True
+                            self.is_active = False
+                            return True
                         elif button.key == "main_menu_exit":
                             self.is_finished = True
                         elif button.key == "download_menu_back":
@@ -314,34 +314,6 @@ class Menu:
                          0.05 * self.size[1]),
                         "Выход",
                         "main_menu_exit",
-                        int(0.02 * self.size[1]),
-                        const.COLORS["cream"]
-                    )
-                ]
-                self.is_in_need_of_update = False
-
-            elif self.menu_mod == "download_menu":
-                self.frames.clear()
-                self.buttons.clear()
-                self.frames = [
-                    Frame(
-                        self.surface,
-                        (0.05 * self.size[0],
-                         0.05 * self.size[0],
-                         0.3 * self.size[0],
-                         0.6 * self.size[1]),
-                        [const.COLORS["light_blue"], const.COLORS["dark_blue"]]
-                    )
-                ]
-                self.buttons = [
-                    Button(
-                        self.surface,
-                        (0.1 * self.size[0],
-                         0.15 * self.size[1],
-                         0.2 * self.size[0],
-                         0.05 * self.size[1]),
-                        "Назад",
-                        "download_menu_back",
                         int(0.02 * self.size[1]),
                         const.COLORS["cream"]
                     )

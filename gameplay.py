@@ -17,7 +17,7 @@ def pixels2tiles(pixel_coords):
     return [pixel_coords[0] // const.TILE_SIZE, pixel_coords[1] // const.TILE_SIZE]
 
 
-def safety_spawn(list_solid_object, spawn_box, mode="anywhere"):
+def find_safe_tile(list_solid_object, spawn_box, mode="anywhere"):
     """
     Spawn creatures in a random guaranteed suitable tile
     :param list_solid_object: list[SolidObject object,...] - list of all solid objects
@@ -72,8 +72,12 @@ class Gameplay:
                     self.list_solid_object.append(objects.Cliff(self.surface, [j, i]))
                 elif self.game_map.field[i][j].pre_object == "deer":
                     self.list_solid_object.append(creature.Deer(self.surface, [j, i]))
+                elif self.game_map.field[i][j].pre_object == "wolf":
+                    self.list_solid_object.append(creature.Wolf(self.surface, [j, i]))
+                elif self.game_map.field[i][j].pre_object == "turtle":
+                    self.list_solid_object.append(creature.Turtle(self.surface, [j, i]))
 
-        self.settler = creature.Settler(self.surface, safety_spawn(
+        self.settler = creature.Settler(self.surface, find_safe_tile(
             self.list_solid_object,
             [self.game_map.width - 1, self.game_map.height - 1],
         ))
@@ -90,18 +94,56 @@ class Gameplay:
         """
         Randomly spawn new animal on the border of the map
         """
-        if (pg.time.get_ticks() > self.scan_time + 100) and (self.number_of_animals < const.ANIMALS_LIMIT):
+        if (pg.time.get_ticks() > self.scan_time + 1000) and (self.number_of_animals < const.ANIMALS_LIMIT):
             rand_num = rnd.random()
             if rand_num < 0.1:
-                self.list_solid_object.append(
-                    creature.Deer(
-                        self.surface,
-                        safety_spawn(self.list_solid_object,
-                                     [self.game_map.width - 1, self.game_map.height - 1],
-                                     "border"),
-                    )
+                new_dear = creature.Deer(
+                    self.surface,
+                    find_safe_tile(self.list_solid_object,
+                                   [self.game_map.width - 1, self.game_map.height - 1],
+                                   "border"),
+                )
+                self.list_solid_object.append(new_dear)
+                new_dear.path = new_dear.pathfinder(
+                    find_safe_tile(self.list_solid_object,
+                                   [self.game_map.width - 1, self.game_map.height - 1]),
+                    self.game_map,
+                    self.list_solid_object
                 )
                 self.number_of_animals += 1
+
+            elif rand_num < 0.2:
+                new_wolf = creature.Wolf(
+                    self.surface,
+                    find_safe_tile(self.list_solid_object,
+                                   [self.game_map.width - 1, self.game_map.height - 1],
+                                   "border"),
+                )
+                self.list_solid_object.append(new_wolf)
+                new_wolf.path = new_wolf.pathfinder(
+                    find_safe_tile(self.list_solid_object,
+                                   [self.game_map.width - 1, self.game_map.height - 1]),
+                    self.game_map,
+                    self.list_solid_object
+                )
+                self.number_of_animals += 1
+
+            elif rand_num < 0.3:
+                new_turtle = creature.Turtle(
+                    self.surface,
+                    find_safe_tile(self.list_solid_object,
+                                   [self.game_map.width - 1, self.game_map.height - 1],
+                                   "border"),
+                )
+                self.list_solid_object.append(new_turtle)
+                new_turtle.path = new_turtle.pathfinder(
+                    find_safe_tile(self.list_solid_object,
+                                   [self.game_map.width - 1, self.game_map.height - 1]),
+                    self.game_map,
+                    self.list_solid_object
+                )
+                self.number_of_animals += 1
+
             self.scan_time = pg.time.get_ticks()
 
     def draw_interface(self):
@@ -276,7 +318,7 @@ class Gameplay:
         if (self.interface_mod == "menu") and (self.interface.interface_mod != "menu"):
             self.interface.update_interface("menu")
 
-        if (self.interface_mod == "default") and (self.interface.interface_mod != "default"):
+        elif (self.interface_mod == "default") and (self.interface.interface_mod != "default"):
             self.interface.update_interface("default")
 
         elif (self.chosen_map_object is not None) and (self.interface.interface_mod != self.chosen_map_object.type):
