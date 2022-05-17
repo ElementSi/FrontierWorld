@@ -109,7 +109,7 @@ class Button:
     def hover(self, event):
         """
         Checking whether the cursor is hovered over the button and changing color
-        :param event: Pygame event object - MOUSEMOTION event from queue
+        :param event: Pygame event object - pg.MOUSEMOTION event from queue
         """
         self.is_selected = is_hovered(event, self.draw_box)
         if self.is_selected:
@@ -248,6 +248,9 @@ class Menu:
         self.is_finished = False
 
     def activate(self):
+        """
+        Processing interaction on the menu buttons
+        """
         for event in pg.event.get():
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
@@ -273,6 +276,9 @@ class Menu:
                             self.is_in_need_of_update = True
 
     def update_menu(self):
+        """
+        Updating the menu state according to the required mod
+        """
         if self.is_in_need_of_update:
             if self.menu_mod == "main_menu":
                 self.frames.clear()
@@ -343,11 +349,17 @@ class Menu:
                 self.is_in_need_of_update = False
 
     def draw_background(self):
+        """
+        Drawing a high resolution picture on the background
+        """
         if (not self.is_background_drawn) or (not self.is_in_need_of_update):
             self.surface.blit(self.background, (0, 0, self.size[0], self.size[1]))
             self.is_background_drawn = True
 
     def draw(self):
+        """
+        Drawing all functional elements of the menu
+        """
         for frame in self.frames:
             frame.draw()
         for button in self.buttons:
@@ -401,20 +413,31 @@ class InGameInterface:
         self.is_finished = False
 
     def draw(self):
+        """
+        Drawing all functional elements of in-game interface
+        """
         for frame in self.frames:
             frame.draw()
         for button in self.buttons:
             button.draw()
 
     def activate(self, event):
+        """
+        Processing hover on the menu buttons
+        """
         if event.type == pg.MOUSEMOTION:
             for button in self.buttons:
                 button.hover(event)
 
     def update_interface(self, mod):
+        """
+        Updating the interface state according to the required mode
+        :param mod: string - desired interface mode
+        """
         self.interface_mod = mod
 
-        if self.interface_mod == "default":
+        if self.interface_mod == "default" or self.interface_mod == "tree" or self.interface_mod == "bush" or \
+                self.interface_mod == "cliff" or self.interface_mod == "deer":
             self.frames.clear()
             self.buttons.clear()
             self.frames = [
@@ -435,11 +458,36 @@ class InGameInterface:
                      0.15 * self.size[0] + 1,
                      const.TILE_SIZE * const.INTERFACE_AMENDMENT),
                     "Меню",
-                    "in-game_interface_menu",
+                    "interface_menu",
                     int(0.03 * self.size[1]),
                     const.COLORS["dark_blue"]
                 )
             ]
+
+        elif self.interface_mod == "menu":
+            self.frames.append(
+                Frame(
+                    self.surface,
+                    (0.85 * self.size[0],
+                     0.5 * self.size[1],
+                     0.15 * self.size[0] - 10,
+                     0.5 * self.size[1] - const.TILE_SIZE * const.INTERFACE_AMENDMENT - 10),
+                    [const.COLORS["light_blue"], const.COLORS["dark_blue"]]
+                )
+            )
+            self.buttons.append(
+                Button(
+                    self.surface,
+                    (0.86 * self.size[0],
+                     0.52 * self.size[1],
+                     0.13 * self.size[0] - 10,
+                     0.05 * self.size[1]),
+                    "Главное меню",
+                    "interface_main_menu",
+                    int(0.02 * self.size[1]),
+                    const.COLORS["cream"]
+                )
+            )
 
         elif self.interface_mod == "settler":
             self.buttons.append(

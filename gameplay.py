@@ -22,7 +22,7 @@ def safety_spawn(list_solid_object, spawn_box, mode="anywhere"):
     Spawn creatures in a random guaranteed suitable tile
     :param list_solid_object: list[SolidObject object,...] - list of all solid objects
     :param spawn_box: list[int, int] - the size of the area where spawn is allowed
-    :param mode: string - spawn mode (everywhere or only at the border)
+    :param mode: string - spawn mod (everywhere or only at the border)
     :return: list[int, int] - coordinates of suitable tile
     """
     suitable_tile = [0, 0]
@@ -50,12 +50,13 @@ class Gameplay:
     Gameplay itself
     """
 
-    def __init__(self, surface):
+    def __init__(self, surface, main_menu):
         """
         Constructor of gameplay
         :param surface: Pygame Surface object - target surface
         """
         self.surface = surface
+        self.main_menu = main_menu
         self.clock = pg.time.Clock()
         self.interface = interface.InGameInterface(surface)
         self.game_map = game_map.GameMap(surface, surface.get_size())
@@ -80,6 +81,7 @@ class Gameplay:
         self.list_loot = []
         self.number_of_animals = 0
         self.scan_time = 0
+        self.interface_mod = "default"
         self.chosen_map_object = None
         self.picked_task = None
         self.is_finished = False
@@ -140,9 +142,17 @@ class Gameplay:
         self.clock.tick(const.FPS)
 
     def _process_quit(self, event):
+        """
+        Processing window close button press
+        :param event: PyGame event object - pg.QUIT object from queue
+        """
         self.is_finished = True
 
     def _process_keydown(self, event):
+        """
+        Processing any button from keyboard press
+        :param event: PyGame event object - pg.KEYDOWN object from queue
+        """
         if event.key == pg.K_ESCAPE:
             if self.chosen_map_object is None:
                 self.is_finished = True
@@ -151,6 +161,11 @@ class Gameplay:
                 self.chosen_map_object = None
 
     def _process_interface(self, event):
+        """
+        Processing click on the interface buttons
+        :param event: PyGame event object - pg.MOUSEBUTTONDOWN object from queue
+        :return: bool - was interface used
+        """
         is_interface_used = False
 
         for button in self.interface.buttons:
@@ -158,10 +173,22 @@ class Gameplay:
                 is_interface_used = True
                 if button.key == "interface_go_to":
                     self.picked_task = "go_to"
+                elif button.key == "interface_menu":
+                    self.interface_mod = "menu"
+                elif button.key == "interface_main_menu":
+                    self.main_menu.is_active = True
+
+        for frame in self.interface.frames:
+            if interface.is_hovered(event, frame.draw_box):
+                is_interface_used = True
 
         return is_interface_used
 
     def _process_if_no_picked_task(self, event):
+        """
+        Processing click on the game map if task for settler is not picked
+        :param event: PyGame event object - pg.MOUSEBUTTONDOWN object from queue
+        """
         none_is_chosen = True
 
         for solid_object in self.list_solid_object:
@@ -180,8 +207,16 @@ class Gameplay:
 
         if none_is_chosen:
             self.chosen_map_object = None
+            self.interface_mod = "default"
+
+        else:
+            self.interface_mod = self.chosen_map_object.type
 
     def _process_if_picked_task(self, event):
+        """
+        Processing click on the game map if some task for settler is picked
+        :param event: PyGame event object - pg.MOUSEBUTTONDOWN object from queue
+        """
         if const.TASKS[self.picked_task] == "object_task":
             target_object = None
 
@@ -238,7 +273,10 @@ class Gameplay:
         """
         Updating the mod of interface according to chosen object
         """
-        if (self.chosen_map_object is None) and (self.interface.interface_mod != "default"):
+        if (self.interface_mod == "menu") and (self.interface.interface_mod != "menu"):
+            self.interface.update_interface("menu")
+
+        if (self.interface_mod == "default") and (self.interface.interface_mod != "default"):
             self.interface.update_interface("default")
 
         elif (self.chosen_map_object is not None) and (self.interface.interface_mod != self.chosen_map_object.type):
@@ -279,19 +317,3 @@ class Gameplay:
                 solid_object.decide_to_move(self.game_map)
             if hasattr(solid_object, 'decide_to_attack'):
                 solid_object.decide_to_attack()
-
-    def remove_solid_object(self):
-        """
-        Removing dead animals and settler, destroyed constructions and nature objects from lists
-        """
-        for solid_object in self.list_solid_object:
-            if solid_object.hit_points < 0:
-                self.list_solid_object.remove(solid_object)
-
-    def remove_effects(self):
-        """
-        Removing effects that are too old
-        """
-        for effect in self.list_effects:
-            if effect.age > effect.lifetime:
-                self.list_effects.remove(effect)

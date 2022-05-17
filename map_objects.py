@@ -397,6 +397,9 @@ class Effect(MapObject):
         self.type = "effect"
 
     def aging(self):
+        """
+        Increasing the age of effect
+        """
         self.age += 1
 
 

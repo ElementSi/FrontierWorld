@@ -20,10 +20,6 @@ LANDSCAPE = {
     "rock": [0.7, pg.transform.scale(pg.image.load("assets/textures/rock.png"), (TILE_SIZE, TILE_SIZE))],
 }
 
-TEXTURES = {
-
-}
-
 TASKS = {
     "chop": "object_task",
     "harvest_berries": "object_task",

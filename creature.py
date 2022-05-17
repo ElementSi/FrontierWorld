@@ -179,21 +179,6 @@ class Creature(objects.SolidObject):
         if len(self.path) == 0:
             self.task.is_finished = True
 
-    def attack(self):
-        pass  # approach a specific creature and beat it
-
-    def death(self):
-        """
-        Processing of death effects
-        :return: Effect object - some kind of effect accompanying death
-                 Corpse object - corpse of dead creature
-        """
-        effect_texture = pg.transform.scale(pg.image.load("blood.png"), (const.TILE_SIZE, const.TILE_SIZE))
-        effect_lifetime = 300
-        death_effect = objects.Effect(self.surface, self.coord, effect_texture, effect_lifetime)
-        return death_effect
-        # need to return corpse
-
 
 class Animal(Creature):
     """
@@ -213,11 +198,8 @@ class Animal(Creature):
         self.type = "def_animal"
 
     def decide_to_move(self, game_map):
-        if rnd.random() < 0.01 and len(self.path) == 0:
+        if (rnd.random() < 0.01 * self.activity_rate) and (len(self.path) == 0):
             self.task = TileTask("go_to", [rnd.randint(0, game_map.width - 1), rnd.randint(0, game_map.height - 1)])
-
-    def decide_to_attack(self):
-        pass  # need to create task "attack" if animal was attacked
 
 
 class Settler(Creature):
@@ -251,7 +233,10 @@ class Settler(Creature):
         self.type = "settler"
 
     def draw(self):
-        if len(self.path) > 0:
+        """
+        Drawing settler and his path in the current window
+        """
+        if len(self.path) > 0 and self.is_chosen:
             transparent_surface = pg.Surface(
                 (self.surface.get_size()),
                 pg.SRCALPHA
@@ -269,31 +254,6 @@ class Settler(Creature):
             self.surface.blit(transparent_surface, (0, 0))
 
         super().draw()
-
-    def chop(self):
-        pass  # approach a specific tree/bush and cut it down
-
-    def harvest_berries(self):
-        pass  # approach a specific riped bush and pick berries
-
-    def construct(self):
-        pass
-        # check if there are enough resources in the inventory;
-        # if there are enough resources, go to a specific tile and create a structure there,
-        # if not, find more resources on the map
-
-    def pick_up_loot(self):
-        pass  # approach a specific loot item and take all the resources from it
-
-    def dig(self):
-        pass  # approach a specific cliff and dig it
-
-    def death(self):
-        """
-        Processing of death effects especially for settler
-        """
-        super().death()
-        #  maybe need to add smth like drop of resources from the inventory
 
 
 class Deer(Animal):
@@ -326,6 +286,7 @@ class Deer(Animal):
         self.speed = 0.05
         self.damage = 0.5
         self.melee_cooldown = 120.0
+        self.activity_rate = 0.2
         self.type = "deer"
 
 
@@ -358,6 +319,7 @@ class Wolf(Animal):
         else:
             self.hit_points = hit_points
         self.damage = 3.0
+        self.activity_rate = 0.5
         self.type = "wolf"
 
 
@@ -386,4 +348,5 @@ class Turtle(Animal):
         self.speed = 0.2
         self.damage = 0.5
         self.melee_cooldown = 80.0
+        self.activity_rate = 0.1
         self.type = "turtle"

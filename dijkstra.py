@@ -4,9 +4,9 @@ import heapq
 
 def make_grid(region_map, list_solid_object):
     """
-    Making cell velocity multiplier matrix
+    Making tile velocity multiplier matrix
     :param region_map: GameMap object - map of the game region
-    :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
+    :param list_solid_object: list[SolidObject object,...] - list of all objects that can block a path
     :return: grid: list[list[float]] - velocity multiplier matrix
     """
     grid = []
@@ -26,11 +26,11 @@ def make_grid(region_map, list_solid_object):
 
 def make_graph(region_map, list_solid_object):
     """
-    Making a dict. The Key: velocity coefficient values at the given coordinate
-                  Value: velocity coefficient values around the given coordinate
+    Making a dict. The Key: tuple(int, int) - coordinates of any tile (x, y)
+                   Value: list[float, tuple(int, int)] - list of speed mods at the around tiles
     :param region_map: GameMap object - map of the game region
-    :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
-    :return: {float: list[float]}: The Key - velocity coefficient values around the given tile
+    :param list_solid_object: list[SolidObject object,...] - list of all objects that can block a path
+    :return: dict{tuple(int, int): list[float, tuple(int, int)]}: - speed of move to neighboring tiles for each file
     """
     graph = {}
     grid = make_grid(region_map, list_solid_object)
@@ -40,32 +40,39 @@ def make_graph(region_map, list_solid_object):
     return graph
 
 
-def check_next_node(x_element, y_element, cols, rows):
+def check_next_node(x_coord, y_coord, cols, rows):
     """
-    Checking for the entry of the next tal into the game map
-    :param x_element:
-    :param y_element:
-    :param cols:
-    :param rows:
-    :return:
+    Checking for the entry of the next tile into the game map
+    :param x_coord: int - x location coordinate
+    :param y_coord: int - y location coordinate
+    :param cols: int - number of columns in game map
+    :param rows: int - number of raws in game map
+    :return: does the next tile enter the game map
     """
-    return 0 <= x_element < cols and 0 <= y_element < rows
+    return 0 <= x_coord < cols and 0 <= y_coord < rows
 
 
 def get_next_nodes(x, y, region_map, list_solid_object):
     """
     Finding cell coordinates around the current in a certain direction
-    :param x: float - x location coordinate
-    :param y: float - y location coordinate
+    :param x: int - x location coordinate
+    :param y: int - y location coordinate
     :param region_map: GameMap object - map of the game region
     :param list_solid_object: list[SolidObject object,...] - list of all objects that can block a path
-    :return: [float, float] - coordinate around the current in a certain direction
+    :return: [int, int] - coordinate around the current in a certain direction
     """
     grid = make_grid(region_map, list_solid_object)
     cols = region_map.width
     rows = region_map.height
     ways = [-1, 0], [0, -1], [1, 0], [0, 1], [1, 1], [1, -1], [-1, 1], [-1, -1]
-    return [(grid[y + dy][x + dx], (x + dx, y + dy)) for dx, dy in ways if check_next_node(x + dx, y + dy, cols, rows)]
+    node = []
+    for dx, dy in ways:
+        if check_next_node(x + dx, y + dy, cols, rows):
+            if abs(dx) + abs(dy) == 2:
+                node.append((grid[y + dy][x + dx] * 2 ** 0.5, (x + dx, y + dy)))
+            else:
+                node.append((grid[y + dy][x + dx], (x + dx, y + dy)))
+    return node
 
 
 def checker_of_path(creature_coord, path, list_solid_object):
@@ -73,8 +80,8 @@ def checker_of_path(creature_coord, path, list_solid_object):
     Checking if there are other objects on the path
     :param creature_coord: list[int, int] - current tile of creature
     :param path: list[list[int, int]] - path of creature
-    :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
-    :return: bool
+    :param list_solid_object: list[SolidObject object,...] - list of all objects that can block a path
+    :return: bool - is path clear
     """
     for tile in path:
         if tile != creature_coord:
@@ -90,7 +97,7 @@ def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object):
     :param creature_coord: [float, float] - coordinates of creature for whom we are looking for a way
     :param goal_coord: [int, int] - finish coordinate
     :param region_map: GameMap object - map of the game region
-    :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
+    :param list_solid_object: list[SolidObject object,...] - list of all objects that can block a path
     :return: list[list[int, int],...] - list of tiles [y, x] to go through
     """
     graph = make_graph(region_map, list_solid_object)
