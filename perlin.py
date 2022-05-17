@@ -4,33 +4,40 @@ from itertools import product
 
 
 def smoothstep(t):
-    """Smooth curve with a zero derivative at 0 and 1, making it useful for
-    interpolating.
-    In general, it is family of sigmoid interpolation and fixation functions.
+    """
+    Smooth curve with a zero derivative at 0 and 1, making it useful for interpolating
+    In general, it is family of sigmoid interpolation and fixation functions
+    :param t: float - variable of the sigma function equation
+    :return: float - the numeric value of the function at the point
     """
     return t * t * (3 - 2 * t)
 
 
 def lerp(t, a, b):
-    """Linear interpolation between a and b, given a fraction t."""
+    """
+    Linear interpolation between a and b, given a fraction t.
+    :param: t: float - grid point
+    :param: a: - the starting point of the interpolation
+    :param: b: - the finishing point of the interpolation
+    """
     return a + t * (b - a)
 
 
 class PerlinNoiseFactory:
-    """Callable that produces Perlin noise for an arbitrary point in an
-    arbitrary number of dimensions.  The underlying grid is aligned with the
-    integers.
-    There is no limit to the coordinates used; new gradients are generated on
-    the fly as necessary.
+    """
+    Callable that produces Perlin noise for an arbitrary point in an arbitrary number of dimensions
+    The underlying grid is aligned with the integers
+    There is no limit to the coordinates used; new gradients are generated on the fly as necessary
     """
 
     def __init__(self, dimension, octaves=1, tile=(), unbias=False):
-        """Create a new Perlin noise factory in the given number of dimensions,
+        """
+        Create a new Perlin noise factory in the given number of dimensions,
         which should be an integer and at least 1.
-        :param tile: can be used to make a seamlessly tiling pattern.
-        :param octaves: create a foggier and more-detailed noise pattern. Better less than 4.
-        :param unbias: True - apply smoothstep function. counteract some of
-        Perlin noise's significant bias towards the center of its output range
+        :param tile: tuple(float, float) - can be used to make a seamlessly tiling pattern
+        :param octaves: int - create a foggier and more-detailed noise pattern, better less than 4
+        :param unbias: bool - if true apply smoothstep function counteract some of
+                              Perlin noise's significant bias towards the center of its output range
         """
         self.dimension = dimension
         self.octaves = octaves
@@ -41,6 +48,9 @@ class PerlinNoiseFactory:
         self.gradient = {}
 
     def _generate_gradient(self):
+        """
+        Creating gradient
+        """
         if self.dimension == 1:
             return random.uniform(-1, 1),
 
@@ -49,8 +59,10 @@ class PerlinNoiseFactory:
         return tuple(coord * scale for coord in random_point)
 
     def get_plain_noise(self, *point):
-        """Get plain noise for a single point, without taking into account
-        either octaves or tiling.
+        """
+        Get plain noise for a single point, without taking into account either octaves or tiling
+        :param point: tuple(float, float) - grid node
+        :return: tuple(float, float) - point after scaling
         """
         if len(point) != self.dimension:
             raise ValueError("Expected {} values, got {}".format(
@@ -87,8 +99,11 @@ class PerlinNoiseFactory:
         return dots[0] * self.scale_factor
 
     def __call__(self, *point):
-        """Get the value of this Perlin noise function at the given point.  The
-        number of values given should match the number of dimensions.
+        """
+        Get the value of this Perlin noise function at the given point
+        The number of values given should match the number of dimensions
+        :param point: tuple(float, float) - grid node
+        :return: int - initial number of dimensions
         """
         ret = 0
         for o in range(self.octaves):
