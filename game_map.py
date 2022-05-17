@@ -1,10 +1,10 @@
 import random as rnd
+
 import numpy as np
-import pygame as pg
 from PIL import Image
 
-import perlin as perlin
 import constants as const
+import perlin as perlin
 
 
 class Tile:
@@ -107,9 +107,3 @@ class GameMap:
                 tile_rect = (j * const.TILE_SIZE, i * const.TILE_SIZE, const.TILE_SIZE, const.TILE_SIZE)
                 landscape_texture = self.field[i][j].texture
                 self.surface.blit(landscape_texture, tile_rect)
-
-    def safe(self, file):
-        """
-        Writing information about the map to a save file
-        """
-        pass  # Надо записать строчку с исчерпывающей и унифицированной информацией о карте в файл

@@ -6,8 +6,9 @@ from itertools import product
 def smoothstep(t):
     """Smooth curve with a zero derivative at 0 and 1, making it useful for
     interpolating.
+    In general, it is family of sigmoid interpolation and fixation functions.
     """
-    return t * t * (3. - 2. * t)
+    return t * t * (3 - 2 * t)
 
 
 def lerp(t, a, b):
@@ -26,15 +27,10 @@ class PerlinNoiseFactory:
     def __init__(self, dimension, octaves=1, tile=(), unbias=False):
         """Create a new Perlin noise factory in the given number of dimensions,
         which should be an integer and at least 1.
-        More octaves create a foggier and more-detailed noise pattern.  More
-        than 4 octaves is rather excessive.
-        ``tile`` can be used to make a seamlessly tiling pattern.  For example:
-            pnf = PerlinNoiseFactory(2, tile=(0, 3))
-        This will produce noise that tiles every 3 units vertically, but never
-        tiles horizontally.
-        If ``unbias`` is true, the smoothstep function will be applied to the
-        output before returning it, to counteract some of Perlin noise's
-        significant bias towards the center of its output range.
+        :param tile: can be used to make a seamlessly tiling pattern.
+        :param octaves: create a foggier and more-detailed noise pattern. Better less than 4.
+        :param unbias: True - apply smoothstep function. counteract some of
+        Perlin noise's significant bias towards the center of its output range
         """
         self.dimension = dimension
         self.octaves = octaves

@@ -1,5 +1,6 @@
-import pygame as pg
 import random as rnd
+
+import pygame as pg
 
 import constants as const
 

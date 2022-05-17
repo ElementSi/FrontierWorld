@@ -1,8 +1,7 @@
 import pygame as pg
 
-import interface as interface
 import gameplay as gameplay
-
+import interface as interface
 
 pg.init()
 
@@ -13,7 +12,6 @@ game = gameplay.Gameplay(screen)
 is_finished = False
 game_preset = "new_game"
 is_game_ready = False
-
 
 while not is_finished:
     if menu.is_active:

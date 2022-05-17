@@ -1,11 +1,8 @@
 import pygame as pg
 
-import constants as const
-import map_objects as objects
 import creature as creature
 import game_map as game_map
-import interface as interface
-
+import map_objects as objects
 
 pg.init()
 
