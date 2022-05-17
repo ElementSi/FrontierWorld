@@ -1,7 +1,7 @@
 import pygame as pg
 
 FPS = 60
-TILE_SIZE = 36
+TILE_SIZE = 24
 FONT = "fonts/Montserrat-Medium.ttf"
 INTERFACE_AMENDMENT = 3
 ANIMALS_LIMIT = 5
