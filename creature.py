@@ -72,7 +72,10 @@ class Creature(objects.SolidObject):
         """
         Updating the texture and draw box of creature in case it was moving
         """
-        if self.direction[0] < 0:
+        if self.direction is None:
+            pass
+
+        elif self.direction[0] < 0:
             self.draw_box = objects.create_draw_box(self.coord, self.draw_features, "west")
             self.texture = objects.create_texture(self.draw_features, "west")
 
@@ -92,7 +95,7 @@ class Creature(objects.SolidObject):
             self.draw_box = objects.create_draw_box(self.coord, self.draw_features, "default")
             self.texture = objects.create_texture(self.draw_features, "default")
 
-    def pathfinder(self, goal_coord, region_map, list_solid_object):
+    def pathfinder(self, goal_coord, region_map, list_solid_object, grid):
         """
         Finding the best way to the goal on the map
         :param goal_coord: list[int, int] - coordinates' of target cell
@@ -104,7 +107,8 @@ class Creature(objects.SolidObject):
                                         int(self.coord[1])],
                                        goal_coord,
                                        region_map,
-                                       list_solid_object)
+                                       list_solid_object,
+                                       grid)
         return path
 
     def define_direction(self, next_coord):
@@ -163,17 +167,18 @@ class Creature(objects.SolidObject):
 
         self.update_image()
 
-    def go_to(self, region_map, list_solid_object):
+    def go_to(self, region_map, list_solid_object, grid):
         """
         Moving to a given tile along a suitable path
         :param region_map: GameMap object - map of the game region
         :param list_solid_object: list[MapObject object,...] - list of all objects that can block a path
+        :param grid: list[list[float]] - velocity multiplier matrix
         """
         if not self.task.is_started:
             if len(self.path) > 0:
-                self.path = [self.path[0]] + self.pathfinder(self.task.target_tile, region_map, list_solid_object)
+                self.path = [self.path[0]] + self.pathfinder(self.task.target_tile, region_map, list_solid_object, grid)
             else:
-                self.path = self.pathfinder(self.task.target_tile, region_map, list_solid_object)
+                self.path = self.pathfinder(self.task.target_tile, region_map, list_solid_object, grid)
             self.task.is_started = True
 
         if len(self.path) == 0:

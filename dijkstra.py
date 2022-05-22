@@ -24,19 +24,18 @@ def make_grid(region_map, list_solid_object):
     return grid
 
 
-def make_graph(region_map, list_solid_object):
+def make_graph(region_map, grid):
     """
     Making a dict. The Key: tuple(int, int) - coordinates of any tile (x, y)
                    Value: list[float, tuple(int, int)] - list of speed mods at the around tiles
     :param region_map: GameMap object - map of the game region
-    :param list_solid_object: list[SolidObject object,...] - list of all objects that can block a path
+    :param grid: list[list[float]] - velocity multiplier matrix
     :return: dict{tuple(int, int): list[float, tuple(int, int)]}: - speed of move to neighboring tiles for each file
     """
     graph = {}
-    grid = make_grid(region_map, list_solid_object)
     for y, row in enumerate(grid):
         for x, col in enumerate(row):
-            graph[(x, y)] = graph.get((x, y), []) + get_next_nodes(x, y, region_map, list_solid_object)
+            graph[(x, y)] = graph.get((x, y), []) + get_next_nodes(x, y, region_map, grid)
     return graph
 
 
@@ -52,16 +51,15 @@ def check_next_node(x_coord, y_coord, cols, rows):
     return 0 <= x_coord < cols and 0 <= y_coord < rows
 
 
-def get_next_nodes(x, y, region_map, list_solid_object):
+def get_next_nodes(x, y, region_map, grid):
     """
     Finding cell coordinates around the current in a certain direction
     :param x: int - x location coordinate
     :param y: int - y location coordinate
     :param region_map: GameMap object - map of the game region
-    :param list_solid_object: list[SolidObject object,...] - list of all objects that can block a path
+    :param grid: list[list[float]] - velocity multiplier matrix
     :return: [int, int] - coordinate around the current in a certain direction
     """
-    grid = make_grid(region_map, list_solid_object)
     cols = region_map.width
     rows = region_map.height
     ways = [-1, 0], [0, -1], [1, 0], [0, 1], [1, 1], [1, -1], [-1, 1], [-1, -1]
@@ -91,16 +89,17 @@ def checker_of_path(creature_coord, path, list_solid_object):
     return False
 
 
-def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object):
+def dijkstra_logic(creature_coord, goal_coord, region_map, list_solid_object, grid):
     """
     Implementation of Dijkstra's algorithm
     :param creature_coord: [float, float] - coordinates of creature for whom we are looking for a way
     :param goal_coord: [int, int] - finish coordinate
     :param region_map: GameMap object - map of the game region
     :param list_solid_object: list[SolidObject object,...] - list of all objects that can block a path
+    :param grid: list[list[float]] - velocity multiplier matrix
     :return: list[list[int, int],...] - list of tiles [y, x] to go through
     """
-    graph = make_graph(region_map, list_solid_object)
+    graph = make_graph(region_map, grid)
     start = (int(creature_coord[0] + 0.5), int(creature_coord[1] + 0.5))
     goal = (goal_coord[0], goal_coord[1])
     queue_coords = []

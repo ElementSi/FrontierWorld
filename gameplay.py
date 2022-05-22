@@ -2,6 +2,7 @@ import pygame as pg
 import random as rnd
 
 import constants as const
+import dijkstra
 import interface as interface
 import game_map as game_map
 import map_objects as objects
@@ -77,6 +78,7 @@ class Gameplay:
                 elif self.game_map.field[i][j].pre_object == "turtle":
                     self.list_solid_object.append(creature.Turtle(self.surface, [j, i]))
 
+        self.grid = dijkstra.make_grid(self.game_map, self.list_solid_object)
         self.settler = creature.Settler(self.surface, find_safe_tile(
             self.list_solid_object,
             [self.game_map.width - 1, self.game_map.height - 1],
@@ -108,7 +110,8 @@ class Gameplay:
                     find_safe_tile(self.list_solid_object,
                                    [self.game_map.width - 1, self.game_map.height - 1]),
                     self.game_map,
-                    self.list_solid_object
+                    self.list_solid_object,
+                    self.grid
                 )
                 self.number_of_animals += 1
 
@@ -124,7 +127,8 @@ class Gameplay:
                     find_safe_tile(self.list_solid_object,
                                    [self.game_map.width - 1, self.game_map.height - 1]),
                     self.game_map,
-                    self.list_solid_object
+                    self.list_solid_object,
+                    self.grid
                 )
                 self.number_of_animals += 1
 
@@ -140,7 +144,8 @@ class Gameplay:
                     find_safe_tile(self.list_solid_object,
                                    [self.game_map.width - 1, self.game_map.height - 1]),
                     self.game_map,
-                    self.list_solid_object
+                    self.list_solid_object,
+                    self.grid
                 )
                 self.number_of_animals += 1
 
@@ -329,14 +334,14 @@ class Gameplay:
         Execution of tasks by creatures in accordance with the name of the tasks
         """
         if self.settler.task is not None:
-            getattr(self.settler, self.settler.task.task_type)(self.game_map, self.list_solid_object)
+            getattr(self.settler, self.settler.task.task_type)(self.game_map, self.list_solid_object, self.grid)
             if self.settler.task.is_finished:
                 self.settler.task = None
 
         for solid_object in self.list_solid_object:
             if hasattr(solid_object, 'task'):
                 if solid_object.task is not None:
-                    getattr(solid_object, solid_object.task.task_type)(self.game_map, self.list_solid_object)
+                    getattr(solid_object, solid_object.task.task_type)(self.game_map, self.list_solid_object, self.grid)
                     if solid_object.task.is_finished:
                         solid_object.task = None
 
